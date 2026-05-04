@@ -1,0 +1,3 @@
+resource_group_name = "RESOURCE_GROUP_NAME"
+environment_name = "ENVIRONMENT_NAME"
+devops-principle-client-id = ""
