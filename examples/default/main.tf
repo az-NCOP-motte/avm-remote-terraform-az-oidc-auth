@@ -10,6 +10,10 @@ terraform {
       version = "~> 0.3"
     }
   }
+
+  backend "azurerm" {
+
+  } # partial: terraform init -backend-config="backend-config.tfbackend"
 }
 
 provider "azurerm" {
