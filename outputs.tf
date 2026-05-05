@@ -3,5 +3,5 @@ output "storage_account_name" {
 }
 
 output "azuread_service_principal_clientID" {
-  value = var.devops-principle-client-id
+  value = var.devops_principle_client_id
 }

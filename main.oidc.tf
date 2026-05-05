@@ -5,7 +5,7 @@
 
 # The service principal you want to grant RBAC permissions to
 data "azuread_service_principal" "devops_sp" { 
-  client_id = "${var.devops-principle-client-id}"
+  client_id = "${var.devops_principle_client_id}"
 }
 
 resource "azurerm_role_assignment" "owner_devops_sp" {

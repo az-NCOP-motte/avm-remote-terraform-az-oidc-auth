@@ -17,15 +17,11 @@ variable "name" {
   }
 }
 
-variable "resource_group_name" {
-  type        = string
-  description = "Name of the resource group provided by tfvars file."
-}
 
 variable "environment_name" {
   type        = string
   description = "Name of the environment provided by tfvars file."
-  default = "TODO"
+  default = "todo"
 }
 
 variable "naming_prefix" {
@@ -44,8 +40,13 @@ variable "prefix" {
   }
 }
 
-variable "devops-principle-client-id" {
+variable "devops_principle_client_id" {
   type = string
+}
+
+variable "devops_organization_url" {
+  type = string
+  default = "https://dev.azure.com/example"
 }
 
 variable "enable_telemetry" {
