@@ -17,6 +17,10 @@ variable "name" {
   }
 }
 
+# variable "resource_group_name" {
+#   type        = string
+#   description = "Name of the resource group provided by tfvars file."
+# }
 
 variable "environment_name" {
   type        = string
