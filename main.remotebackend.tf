@@ -94,9 +94,9 @@ resource "azurerm_app_configuration_key" "az_app_config_devops_principle_client"
 
 # Storage Account 
 resource "azurerm_storage_account" "tf_state" {
-  name                            = "${lower(var.environment_name)}strgmotte"
-  resource_group_name             = data.azurerm_resource_group.dt_motte_cloud.name
-  location                        = data.azurerm_resource_group.dt_motte_cloud.location
+  name                            = "${lower(var.environment_name)}rgmotte"
+  resource_group_name             = azurerm_resource_group.TODO.name
+  location                        = azurerm_resource_group.TODO.location
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   shared_access_key_enabled       = false
@@ -120,4 +120,3 @@ resource "azurerm_storage_blob" "tf_state" {
   content_type           = "application/json"
   access_tier            = "Hot"
 }
-
