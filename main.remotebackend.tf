@@ -91,3 +91,33 @@ resource "azurerm_app_configuration_key" "az_app_config_devops_principle_client"
     azurerm_role_assignment.key_vault_devops_sp,
   ]
 }
+
+# Storage Account 
+resource "azurerm_storage_account" "tf_state" {
+  name                            = "${lower(var.environment_name)}strgmotte"
+  resource_group_name             = data.azurerm_resource_group.dt_motte_cloud.name
+  location                        = data.azurerm_resource_group.dt_motte_cloud.location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  shared_access_key_enabled       = false
+  default_to_oauth_authentication = true
+}
+
+# Storage Container
+resource "azurerm_storage_container" "tf_state" {
+  name                  = "tfstate"
+  storage_account_id    = azurerm_storage_account.storage.id # nieuwe versie
+  container_access_type = "private"
+}
+
+# Storage Blob
+resource "azurerm_storage_blob" "tf_state" {
+  name                   = "terraform.tfstate"
+  storage_account_name   = azurerm_storage_account.tf_state.name
+  storage_container_name = azurerm_storage_container.tf_state.name
+  type                   = "Block"
+  source                 = "terraform.tfstate"
+  content_type           = "application/json"
+  access_tier            = "Hot"
+}
+
