@@ -1,17 +1,17 @@
-#TODO implement remote backend resource blocks
+#This file is to implement remote backend resource blocks
 
 # App Config for remote state and tfvars
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "TODO" {
-  name                       = "exampleKVt123"
-  location                   = azurerm_resource_group.TODO.location
-  resource_group_name        = azurerm_resource_group.TODO.name
+  name                        = "exampleKVt123"
+  location                    = azurerm_resource_group.TODO.location
+  resource_group_name         = azurerm_resource_group.TODO.name
   enabled_for_disk_encryption = true
-  tenant_id                  = data.azurerm_client_config.current.tenant_id
-  sku_name                   = "standard"
-  soft_delete_retention_days = 7
-  purge_protection_enabled   = true
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "standard"
+  soft_delete_retention_days  = 7
+  purge_protection_enabled    = true
 
   depends_on = [
     azurerm_role_assignment.key_vault_contributer_devops_sp,
@@ -54,11 +54,11 @@ resource "azurerm_app_configuration" "TODO" {
   name                       = "az-terraform-devops-gitops-automation"
   resource_group_name        = azurerm_resource_group.TODO.name
   location                   = azurerm_resource_group.TODO.location
-#   sku                        = "developer" # defaults to free
   local_auth_enabled         = true
   public_network_access      = "Disabled"
-  purge_protection_enabled   = false
+  # purge_protection_enabled   = true # defaults to false
   soft_delete_retention_days = 1
+  sku                        = "developer" # defaults to free
 
   tags = {
     environment = "development"

@@ -3,7 +3,7 @@
 #   name = var.resource_group_name
 # }
 
-# The service principal you want to grant RBAC permissions to
+# The service principal you want to grant RBAC permissions to  # usage: principal_id         = data.azurerm_client_config.current.object_id
 data "azuread_service_principal" "devops_sp" { 
   client_id = "${var.devops_principle_client_id}"
 }
