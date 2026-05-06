@@ -79,6 +79,37 @@ resource "azurerm_app_configuration_key" "az_app_config_resource_group_name" {
   ]
 }
 
+resource "azurerm_app_configuration_key" "az_app_config_environment_name" {
+  configuration_store_id = azurerm_app_configuration.TODO.id
+  key                    = "environment_name"
+  value                  = azurerm_resource_group.TODO.name
+
+  depends_on = [
+    azurerm_role_assignment.app_config_devops_sp
+  ]
+}
+
+resource "azurerm_app_configuration_key" "az_app_config_devops_organisation_ur" {
+  configuration_store_id = azurerm_app_configuration.TODO.id
+  key                    = "devops_organisation_ur"
+  value                  = azurerm_resource_group.TODO.name
+
+  depends_on = [
+    azurerm_role_assignment.app_config_devops_sp
+  ]
+}
+
+# Optional devops_principle_client_id App Config without Key Vault Usage
+# resource "azurerm_app_configuration_key" "az_app_config_devops_principle_client_id" {
+#   configuration_store_id = azurerm_app_configuration.TODO.id
+#   key                    = "devops_principle_client_id"
+#   value                  = azurerm_resource_group.TODO.name
+
+#   depends_on = [
+#     azurerm_role_assignment.app_config_devops_sp
+#   ]
+# }
+
 resource "azurerm_app_configuration_key" "az_app_config_devops_principle_client" {
   configuration_store_id = azurerm_app_configuration.TODO.id
   key                    = "devops_principle_client_id_vault_ref"
