@@ -42,8 +42,9 @@ module "test" {
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
   name                       = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
-  # resource_group_name        = azurerm_resource_group.rs_gr.name
-  enable_telemetry           = var.enable_telemetry # see variables.tf
-  devops_principle_client_id = ""
-  naming_prefix              = ""
+  resource_group_name        = var.resource_group_name
+  subscription_id            = var.subscription_id # todo: consider using data.azurerm_client_config.current.subscription_id
+  enable_telemetry           = var.enable_telemetry
+  devops_principle_client_id = var.devops_principle_client_id
+  naming_prefix              = "todo"
 }
