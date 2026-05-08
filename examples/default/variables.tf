@@ -21,7 +21,12 @@ variable "subscription_id" { # use terraform.tfvars for input
 
 variable "devops_principle_client_id" { # use terraform.tfvars for input
   type        = string
-  description = "Subscription ID of the resource group provided by tfvars file."
+  description = "Service Connection Principle Client ID provided by tfvars file."
+}
+
+variable "devops_organization_url" { # use terraform.tfvars for input
+  type        = string
+  description = "DevOps Organization URL provided by tfvars file."
 }
 
 variable "location" {
