@@ -1,8 +1,8 @@
-output "azurerm_client_config.current.object_id" {
+output "azurerm_client_config_object_id" {
   value = data.azurerm_client_config.current.object_id
 }
 
-output "azurerm_client_config.current.subscription_id" {
+output "azurerm_client_config_subscription_id" {
   value = data.azurerm_client_config.current.subscription_id
 }
 
