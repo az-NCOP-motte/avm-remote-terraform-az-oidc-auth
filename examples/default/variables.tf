@@ -14,16 +14,14 @@ variable "resource_group_name" {
   default     = "avm-remote-terraform-az-oidc-auth"
 }
 
-variable "subscription_id" {
+variable "subscription_id" { # use terraform.tfvars for input
   type        = string
   description = "Subscription ID of the resource group provided by tfvars file."
-  default     = "xxx"
 }
 
-variable "devops_principle_client_id" {
+variable "devops_principle_client_id" { # use terraform.tfvars for input
   type        = string
   description = "Subscription ID of the resource group provided by tfvars file."
-  default     = "xxx"
 }
 
 variable "location" {
