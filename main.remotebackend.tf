@@ -41,7 +41,7 @@ resource "azurerm_key_vault_key" "devops_principle_client" {
 
 resource "azurerm_key_vault_secret" "devops_principle_client" {
   name         = "principle-client-id"
-  value        = "client-id-here"
+  value        = var.devops_principle_client_id  # todo: consider using data.azurerm_client_config.current.object_id (as login principle is set in pipeline)
   key_vault_id = azurerm_key_vault.TODO.id
 
   depends_on = [
