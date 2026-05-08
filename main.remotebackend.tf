@@ -42,7 +42,7 @@ resource "azurerm_key_vault_key" "devops_principle_client" {
 
 resource "azurerm_key_vault_secret" "devops_principle_client" {
   name         = "principle-client-id"
-  value        = var.devops_principle_client_id  # todo: consider using data.azurerm_client_config.current.object_id (as login principle is set in pipeline)
+  value        = var.devops_principle_client_id # todo: consider using data.azurerm_client_config.current.object_id (as login principle is set in pipeline)
   key_vault_id = azurerm_key_vault.TODO.id
 
   depends_on = [
@@ -52,14 +52,15 @@ resource "azurerm_key_vault_secret" "devops_principle_client" {
 }
 
 resource "azurerm_app_configuration" "TODO" {
-  name                       = "az-terraform-devops-gitops-automation"
-  resource_group_name        = azurerm_resource_group.TODO.name
-  location                   = azurerm_resource_group.TODO.location
-  local_auth_enabled         = true
-  public_network_access      = "Disabled"
-  # purge_protection_enabled   = true # defaults to false
-  soft_delete_retention_days = 1
-  sku                        = "developer" # defaults to free
+  name                                 = "az-terraform-devops-gitops-automation"
+  resource_group_name                  = azurerm_resource_group.TODO.name
+  location                             = azurerm_resource_group.TODO.location
+  local_auth_enabled                   = true
+  public_network_access                = "Enabled"
+  data_plane_proxy_authentication_mode = "Pass-through"
+  # purge_protection_enabled             = true # defaults to false
+  # soft_delete_retention_days           = 1
+  # sku                                  = "developer" # defaults to free
 
   tags = {
     environment = "development"
@@ -90,10 +91,10 @@ resource "azurerm_app_configuration_key" "az_app_config_resource_group_name" {
 #   ]
 # }
 
-resource "azurerm_app_configuration_key" "az_app_config_subscription_id" {  # todo: consider using data.azurerm_client_config.current.subscription_id
+resource "azurerm_app_configuration_key" "az_app_config_subscription_id" { # todo: consider using data.azurerm_client_config.current.subscription_id
   configuration_store_id = azurerm_app_configuration.TODO.id
   key                    = "subscription_id"
-  value                  = var.subscription_id 
+  value                  = var.subscription_id
 
   depends_on = [
     azurerm_role_assignment.app_config_devops_sp
@@ -167,7 +168,7 @@ resource "azurerm_storage_account" "tf_state" {
 
 # Storage Container
 resource "azurerm_storage_container" "tf_state" {
-  name                  = "tfstate"
+  name                  = "${lower(var.environment_name)}tfstate"
   storage_account_id    = azurerm_storage_account.tf_state.id
   container_access_type = "private"
 }
