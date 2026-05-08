@@ -79,20 +79,50 @@ resource "azurerm_app_configuration_key" "az_app_config_resource_group_name" {
   ]
 }
 
-resource "azurerm_app_configuration_key" "az_app_config_environment_name" {
+# resource "azurerm_app_configuration_key" "az_app_config_enable_telemetry" {
+#   configuration_store_id = azurerm_app_configuration.TODO.id
+#   key                    = "enable_telemetry"
+#   value                  = azurerm_storage_account.tf_state.name
+
+#   depends_on = [
+#     azurerm_role_assignment.app_config_devops_sp
+#   ]
+# }
+
+resource "azurerm_app_configuration_key" "az_app_config_subscription_id" {  # todo: consider using data.azurerm_client_config.current.subscription_id
   configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "environment_name"
-  value                  = azurerm_resource_group.TODO.name
+  key                    = "subscription_id"
+  value                  = var.subscription_id 
 
   depends_on = [
     azurerm_role_assignment.app_config_devops_sp
   ]
 }
 
-resource "azurerm_app_configuration_key" "az_app_config_devops_organisation_ur" {
+resource "azurerm_app_configuration_key" "az_app_config_location" {
   configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "devops_organisation_ur"
-  value                  = azurerm_resource_group.TODO.name
+  key                    = "location"
+  value                  = azurerm_resource_group.TODO.location
+
+  depends_on = [
+    azurerm_role_assignment.app_config_devops_sp
+  ]
+}
+
+resource "azurerm_app_configuration_key" "az_app_config_devops_organisation_url" {
+  configuration_store_id = azurerm_app_configuration.TODO.id
+  key                    = "devops_organisation_url"
+  value                  = var.devops_organization_url
+
+  depends_on = [
+    azurerm_role_assignment.app_config_devops_sp
+  ]
+}
+
+resource "azurerm_app_configuration_key" "az_app_config_environment_name" {
+  configuration_store_id = azurerm_app_configuration.TODO.id
+  key                    = "environment_name"
+  value                  = var.environment_name
 
   depends_on = [
     azurerm_role_assignment.app_config_devops_sp
