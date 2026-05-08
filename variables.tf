@@ -17,10 +17,16 @@ variable "name" {
   }
 }
 
-# variable "resource_group_name" {
-#   type        = string
-#   description = "Name of the resource group provided by tfvars file."
-# }
+variable "resource_group_name" {
+  type        = string
+  description = "Name of the resource group provided by tfvars file."
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "Subscription ID of the resource group provided by tfvars file."
+}
+
 
 variable "environment_name" {
   type        = string
@@ -50,7 +56,6 @@ variable "devops_principle_client_id" {
 
 variable "devops_organization_url" {
   type = string
-  default = "https://dev.azure.com/example"
 }
 
 variable "enable_telemetry" {
