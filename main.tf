@@ -1,8 +1,17 @@
 # TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
+
+
+provider "azurerm" {
+  features {
+
+  }
+  skip_provider_registration = true
+  storage_use_azuread        = true
+}
+
 resource "azurerm_resource_group" "TODO" {
   location = var.location
-  name     = var.name # calling code must supply the name
-  tags     = var.tags
+  name     = var.resource_group_name # calling code must supply the name
 }
 
 # required AVM resources interfaces

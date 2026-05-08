@@ -24,6 +24,12 @@ provider "azurerm" {
   storage_use_azuread        = true
 }
 
+# import resource group that was created in set-up   # todo: consider using data.azurerm_client_config.current.subscription_id
+import {
+  to = module.test.azurerm_resource_group.TODO
+  id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
+}
+
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
