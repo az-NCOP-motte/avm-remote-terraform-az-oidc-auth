@@ -21,3 +21,7 @@ output "BACKEND_AZURE_STORAGE_ACCOUNT_NAME" {
 output "BACKEND_RESOURCE_GROUP_NAME" {
   value = azurerm_resource_group.TODO.name
 }
+
+output "APP_CONFIG_ENDPOINT" {
+  value = azurerm_app_configuration.TODO.endpoint
+}
