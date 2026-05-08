@@ -1,5 +1,9 @@
-output "storage_account_name" {
-  value = azurerm_storage_account.tf_state.id
+output "azurerm_client_config.current.object_id" {
+  value = data.azurerm_client_config.current.object_id
+}
+
+output "azurerm_client_config.current.subscription_id" {
+  value = data.azurerm_client_config.current.subscription_id
 }
 
 output "azuread_service_principal_clientID" {
