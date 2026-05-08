@@ -178,7 +178,7 @@ resource "azurerm_storage_blob" "tf_state" {
   storage_account_name   = azurerm_storage_account.tf_state.name
   storage_container_name = azurerm_storage_container.tf_state.name
   type                   = "Block"
-  source                 = "terraform.tfstate"
+  source_content         = "{}"
   content_type           = "application/json"
   access_tier            = "Hot"
 }
