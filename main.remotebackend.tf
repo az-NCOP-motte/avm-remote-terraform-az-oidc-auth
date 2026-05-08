@@ -4,7 +4,7 @@
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "TODO" {
-  name                        = "exampleKVt123"
+  name                        = "${lower(var.environment_name)}exampleKVt123"
   location                    = azurerm_resource_group.TODO.location
   resource_group_name         = azurerm_resource_group.TODO.name
   enabled_for_disk_encryption = true
@@ -12,6 +12,7 @@ resource "azurerm_key_vault" "TODO" {
   sku_name                    = "standard"
   soft_delete_retention_days  = 7
   purge_protection_enabled    = true
+  rbac_authorization_enabled  = true
 
   depends_on = [
     azurerm_role_assignment.key_vault_contributer_devops_sp,
