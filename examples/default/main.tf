@@ -44,7 +44,6 @@ module "test" {
   name                       = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
   resource_group_name        = var.resource_group_name
   subscription_id            = var.subscription_id # todo: consider using data.azurerm_client_config.current.subscription_id
-  devops_organization_url    = var.devops_organization_url
   enable_telemetry           = var.enable_telemetry
   devops_principle_client_id = var.devops_principle_client_id
   naming_prefix              = "todo"
