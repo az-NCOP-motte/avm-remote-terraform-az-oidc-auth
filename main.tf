@@ -26,7 +26,7 @@ resource "azurerm_management_lock" "this" {
 
 # Dev Ops Pool
 resource "azurerm_dev_center" "example" {
-  name                = "az-terraform-devops-pipeline"
+  name                = "terraform-pipeline"
   resource_group_name = azurerm_resource_group.TODO.name
   location            = azurerm_resource_group.TODO.location
 }
@@ -35,13 +35,13 @@ resource "azurerm_dev_center_project" "example" {
   dev_center_id       = azurerm_dev_center.example.id
   resource_group_name = azurerm_resource_group.TODO.name
   location            = azurerm_resource_group.TODO.location
-  name                = "example"
+  name                = "terraform-pipeline"
 }
 
 resource "azurerm_managed_devops_pool" "example" {
-  name                  = "example-manageddevopspools"
-  resource_group_name = azurerm_resource_group.TODO.name
-  location            = azurerm_resource_group.TODO.location
+  name                  = "motte-agent-pool"
+  resource_group_name   = azurerm_resource_group.TODO.name
+  location              = "Australia East" #todo find better SKU setup
   dev_center_project_id = azurerm_dev_center_project.example.id
   maximum_concurrency   = 1
 
