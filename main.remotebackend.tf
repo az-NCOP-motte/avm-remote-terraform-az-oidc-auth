@@ -113,7 +113,7 @@ resource "azurerm_app_configuration_key" "az_app_config_location" {
 
 resource "azurerm_app_configuration_key" "az_app_config_devops_organisation_url" {
   configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "devops_organisation_url"
+  key                    = "devops_organization_url"
   value                  = var.devops_organization_url
 
   depends_on = [
