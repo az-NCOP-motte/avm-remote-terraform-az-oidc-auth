@@ -172,13 +172,3 @@ resource "azurerm_storage_container" "tf_state" {
   storage_account_id    = azurerm_storage_account.tf_state.id
   container_access_type = "private"
 }
-
-# Storage Blob
-resource "azurerm_storage_blob" "tf_state" {
-  name                   = "terraform.tfstate"
-  storage_account_name   = azurerm_storage_account.tf_state.name
-  storage_container_name = azurerm_storage_container.tf_state.name
-  type                   = "Block"
-  content_type = "application/json"
-  access_tier  = "Hot"
-}
