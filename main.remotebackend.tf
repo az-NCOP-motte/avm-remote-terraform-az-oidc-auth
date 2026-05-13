@@ -4,7 +4,7 @@
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "TODO" {
-  name                        = "${lower(var.environment_name)}exampleKVt123"
+  name                        = "${lower(var.environment_name)}-key-vault-pipeline"
   location                    = azurerm_resource_group.TODO.location
   resource_group_name         = azurerm_resource_group.TODO.name
   enabled_for_disk_encryption = true
@@ -21,7 +21,7 @@ resource "azurerm_key_vault" "TODO" {
 }
 
 resource "azurerm_key_vault_key" "devops_principle_client" {
-  name         = "service-principle-client-id"
+  name         = "${lower(var.environment_name)}-service-principle-client-id"
   key_vault_id = azurerm_key_vault.TODO.id
   key_type     = "RSA"
   key_size     = 2048
@@ -41,7 +41,7 @@ resource "azurerm_key_vault_key" "devops_principle_client" {
 }
 
 resource "azurerm_key_vault_secret" "devops_principle_client" {
-  name         = "principle-client-id"
+  name         = "${lower(var.environment_name)}-principle-client-id"
   value        = var.devops_principle_client_id # todo: consider using data.azurerm_client_config.current.object_id (as login principle is set in pipeline)
   key_vault_id = azurerm_key_vault.TODO.id
 
