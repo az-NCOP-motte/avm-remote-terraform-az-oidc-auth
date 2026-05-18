@@ -34,6 +34,6 @@ resource "azurerm_role_assignment" "key_vault_devops_sp" {
 
 resource "azurerm_role_assignment" "key_vault_contributer_devops_sp" {
   scope                = azurerm_resource_group.TODO.id
-  role_definition_name = "Key Vault Contributor"
+  role_definition_name = "Key Vault Administrator"
   principal_id         = data.azuread_service_principal.devops_sp.object_id
 }
