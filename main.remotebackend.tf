@@ -1,7 +1,7 @@
 #This file is to implement remote backend resource blocks for tfvars
 
 resource "azurerm_storage_account" "tf_state" {
-  name                            = "${lower(var.environment_name)}rgmotte"
+  name                            = "${lower(var.environment_name)}-motte-pipeline"
   resource_group_name             = azurerm_resource_group.TODO.name
   location                        = azurerm_resource_group.TODO.location
   account_tier                    = "Standard"
@@ -12,7 +12,7 @@ resource "azurerm_storage_account" "tf_state" {
 
 # Storage Container
 resource "azurerm_storage_container" "tf_state" {
-  name                  = "${lower(var.environment_name)}tfstate"
+  name                  = "tfstate"
   storage_account_id    = azurerm_storage_account.tf_state.id
   container_access_type = "private"
 }
