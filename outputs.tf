@@ -14,10 +14,6 @@ output "BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME" {
   value = azurerm_storage_container.tf_state.name
 }
 
-output "BACKEND_AZURE_STORAGE_ACCOUNT_KEY_NAME" {
-  value = azurerm_storage_blob.tf_state.name
-}
-
 output "BACKEND_AZURE_STORAGE_ACCOUNT_NAME" {
   value = azurerm_storage_account.tf_state.name
 }
