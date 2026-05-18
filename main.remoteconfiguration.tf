@@ -1,7 +1,7 @@
 #This file is to implement remote App Config blocks for tfvars
 
 resource "azurerm_key_vault" "TODO" {
-  name                        = "${lower(var.environment_name)}-key-vault-pipeline"
+  name                        = "${lower(var.environment_name)}-pipeline"
   location                    = azurerm_resource_group.TODO.location
   resource_group_name         = azurerm_resource_group.TODO.name
   enabled_for_disk_encryption = true
@@ -18,7 +18,7 @@ resource "azurerm_key_vault" "TODO" {
 }
 
 resource "azurerm_key_vault_key" "devops_principle_client" {
-  name         = "${lower(var.environment_name)}-service-principle-client-id"
+  name         = "service-principle-client-id"
   key_vault_id = azurerm_key_vault.TODO.id
   key_type     = "RSA"
   key_size     = 2048
@@ -38,7 +38,7 @@ resource "azurerm_key_vault_key" "devops_principle_client" {
 }
 
 resource "azurerm_key_vault_secret" "devops_principle_client" {
-  name         = "${lower(var.environment_name)}-principle-client-id"
+  name         = azurerm_key_vault_key.devops_principle_client.name
   value        = var.devops_principle_client_id # todo: consider using data.azurerm_client_config.current.object_id (as login principle is set in pipeline)
   key_vault_id = azurerm_key_vault.TODO.id
 
@@ -49,7 +49,7 @@ resource "azurerm_key_vault_secret" "devops_principle_client" {
 }
 
 resource "azurerm_app_configuration" "TODO" {
-  name                                 = "az-terraform-devops-gitops-automation"
+  name                                 = "${lower(var.environment_name)}-pipeline"
   resource_group_name                  = azurerm_resource_group.TODO.name
   location                             = azurerm_resource_group.TODO.location
   local_auth_enabled                   = true

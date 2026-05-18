@@ -2,7 +2,7 @@
 
 # Dev Ops Pool
 resource "azurerm_dev_center" "example" {
-  name                = "terraform-pipeline"
+  name                = "${lower(var.environment_name)}-motte-pipeline"
   resource_group_name = azurerm_resource_group.TODO.name
   location            = azurerm_resource_group.TODO.location
 }
@@ -11,11 +11,11 @@ resource "azurerm_dev_center_project" "example" {
   dev_center_id       = azurerm_dev_center.example.id
   resource_group_name = azurerm_resource_group.TODO.name
   location            = azurerm_resource_group.TODO.location
-  name                = "terraform-pipeline"
+  name                = azurerm_dev_center.example.name
 }
 
 resource "azurerm_managed_devops_pool" "example" {
-  name                  = "motte-agent-pool"
+  name                  = azurerm_dev_center.example.name
   resource_group_name   = azurerm_resource_group.TODO.name
   location              = "Australia East" #todo find better SKU setup
   dev_center_project_id = azurerm_dev_center_project.example.id

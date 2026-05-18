@@ -32,6 +32,11 @@ variable "environment_name" {
   type        = string
   description = "Name of the environment provided by tfvars file."
   default = "todo"
+
+  validation {
+    condition     = length(var.environment_name) >= 3 && length(var.environment_name) <= 8
+    error_message = "Naming prefix should be between 3-8 characters. Submitted value was ${length(var.environment_name)}."
+  }
 }
 
 variable "naming_prefix" {
