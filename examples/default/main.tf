@@ -20,7 +20,7 @@ provider "azurerm" {
   storage_use_azuread        = true
 }
 
-# import resource group that was created in set-up   # todo: consider using data.azurerm_client_config.current.subscription_id
+# import resource group that was created in set-up
 import {
   to = module.test.azurerm_resource_group.TODO
   id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
@@ -41,11 +41,12 @@ module "test" {
 
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  name                       = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
+  name                       = "TODO"
   resource_group_name        = var.resource_group_name
-  subscription_id            = var.subscription_id # todo: consider using data.azurerm_client_config.current.subscription_id
+  subscription_id            = var.subscription_id
   devops_organization_url    = var.devops_organization_url
   enable_telemetry           = var.enable_telemetry
   devops_principle_client_id = var.devops_principle_client_id
-  naming_prefix              = "todo"
+  naming_prefix              = "motte"
+  environment_name           = "def"
 }
