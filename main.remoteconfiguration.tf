@@ -1,7 +1,7 @@
 #This file is to implement remote App Config blocks for tfvars
 
 resource "azurerm_key_vault" "TODO" {
-  name                        = "${lower(var.environment_name)}-pipeline"
+  name                        = "${lower(var.environment_name)}-motte-pipeline"
   location                    = azurerm_resource_group.TODO.location
   resource_group_name         = azurerm_resource_group.TODO.name
   enabled_for_disk_encryption = true
