@@ -1,0 +1,10 @@
+steps:
+  - script: |
+      git config --global --get-all http.https://dev.azure.com/.extraheader
+      git config --global http.https://dev.azure.com/.extraheader "AUTHORIZATION: bearer $SYSTEM_ACCESSTOKEN"
+      git config --global --get-all http.https://dev.azure.com/.extraheader
+
+      # git config --global http.https://dev.azure.com/${ORG_URL}/.extraheader "AUTHORIZATION: bearer $SYSTEM_ACCESSTOKEN"
+    displayName: 'Configure git authentication header'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)

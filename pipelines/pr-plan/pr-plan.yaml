@@ -1,0 +1,107 @@
+# Pull Request (PR) Plan pipeline
+# Start with a app config from Azure then Creates a Terraform Plan through a Service Connection, to post as PR Comment.
+
+variables:
+- group: state-data
+- group: config-data
+- name: service-connection
+  value: 'avm-remote-terraform-az-oidc-auth' # Override Variable in Specific Pipeline to use another
+- name: provider
+  value: 'azurerm'
+- name: directory
+  value: 'terraform/environments/$(environment_name)' # environment_name variable is defined in pipeline
+- name: tfvars-auto-file
+  value : 'terraform.auto.tfvars.json' 
+- name: deploy-tf-file
+  value: 'deploy.tfplan'
+- name: plan-artifact-name
+  value: 'PlanFile'
+- name: plan-artifact-publish-location
+  value: 'pipeline'
+- name: plan-text-file
+  value: 'plan.txt'
+- name: comment-json-file
+  value: 'terraform-plan-comment.json'
+
+trigger:
+  branches:
+    include: # trigger is done through branch policy in devops
+      - none
+
+pool:
+  name: '$(environment_name)-motte-pipeline' #configure pool.
+  demands:
+    - ImageOverride -equals az-pipeline
+
+stages:
+- stage: Plan
+  displayName: Plan
+  condition: eq(variables['Build.Reason'], 'PullRequest')
+  jobs:
+  - job: Generate
+    steps:
+
+    - template: ../steps/git-config-pat.yml
+
+    - template: ../steps/az-cli-appconfig.yml
+      parameters:
+        path: $(tfvars-auto-file)
+        endpoint: $(app-config-endpoint)
+
+    - template: ../steps/terraform-init.yml
+
+    - task: TerraformTaskV4@4
+      displayName: Terraform Plan
+      inputs:
+        provider: $(provider)
+        command: 'plan'
+        workingDirectory: $(directory)
+        commandOptions: -out=$(deploy-tf-file)
+        environmentServiceNameAzureRM: $(service-connection)
+      env:
+        ARM_USE_AZUREAD: true
+        ARM_USE_OIDC: true
+        TF_IN_AUTOMATION: true
+        TF_INPUT: 0
+        TF_LOG: DEBUG
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Plan File as an artifact
+      inputs:
+        targetPath: '$(directory)/$(deploy-tf-file)'
+        artifactName: $(plan-artifact-name)
+        publishLocation: $(plan-artifact-publish-location)
+
+    - script: |
+        terraform show -no-color $(deploy-tf-file) > $(plan-text-file)
+      workingDirectory: $(directory)
+      displayName: Convert plan to text
+    
+    - template: build-pr-comment-as-file.yml
+      parameters:
+        inputFile: "$(directory)/$(plan-text-file)"
+        outputFile: "$(directory)/$(comment-json-file)"
+
+  #   - task: PublishPipelineArtifact@1
+  #     displayName: Publish Comment File as an artifact
+  #     inputs:
+  #       targetPath: '$(directory)/$(comment-json-file)'
+  #       artifactName: 'CommentJSON'
+  #       publishLocation: $(plan-artifact-publish-location)
+      
+  # - job: Post
+  #   dependsOn: Generate
+  #   steps:
+
+  #   - task: DownloadPipelineArtifact@2
+  #     displayName: Download Comment file
+  #     inputs:
+  #       artifact: 'CommentJSON'
+  #       targetPath: $(directory)
+      
+    - template: ../steps/az-cli-post-pr-comment.yml
+      parameters:
+        PR_ID: $(System.PullRequest.PullRequestId)
+        comment_json_file: $(comment-json-file)
+
+    - template: ../steps/git-config-reset.yml

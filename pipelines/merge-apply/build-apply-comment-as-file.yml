@@ -1,0 +1,61 @@
+parameters:
+  inputFile: ""
+  outputFile: ""
+  buildId: ""
+
+steps:
+  - task: AzureCLI@2
+    displayName: Build PR Comment File
+    inputs:
+      azureSubscription: $(service-connection)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        set -euo pipefail
+
+        INPUT_TEXT_FILE="${{ parameters.inputFile }}"
+        OUTPUT_FILE="${{ parameters.outputFile }}"
+        BUILD_ID="${{ parameters.buildId }}"
+
+        echo "📘 Reading Terraform plan from: $INPUT_TEXT_FILE"
+
+        # Read entire text file
+        PLAN_CONTENT="$(cat "$INPUT_TEXT_FILE")"
+
+        # Build beautiful markdown block
+        MARKDOWN=$(cat << 'EOF'
+        ## Merge Apply Pipeline follow-up
+        [Go to Merge Apply Pipeline Summary](https://dev.azure.com/az-NCOP-motte/terraform-standardization/_build/results?buildId=__BUILD_ID__&view=results)
+        ---
+
+        <details>
+        <summary> PR merged (click to expand)</summary>
+        
+        ``````hcl
+        details here...
+        ``````
+        </details>
+        
+        EOF
+        )
+
+        # Inject markdown template
+        MARKDOWN="${MARKDOWN/__BUILD_ID__/$BUILD_ID}"
+
+        echo "✅ Writing JSON payload to: $OUTPUT_FILE"
+
+        # Build JSON using jq
+        jq -n --arg content "$MARKDOWN" '
+        {
+          comments: [
+            {
+              parentCommentId: 0,
+              content: $content,
+              commentType: 1
+            }
+          ],
+          status: 1
+        }
+        ' > "$OUTPUT_FILE"
+
+        echo "✅ $OUTPUT_FILE built successfully."
