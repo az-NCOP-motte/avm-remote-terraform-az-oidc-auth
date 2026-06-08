@@ -35,23 +35,18 @@ variable "environment_name" {
 
   validation {
     condition     = length(var.environment_name) >= 3 && length(var.environment_name) <= 8
-    error_message = "Naming prefix should be between 3-8 characters. Submitted value was ${length(var.environment_name)}."
+    error_message = "Environment name should be between 3-8 characters. Submitted value was ${length(var.environment_name)}."
   }
 }
 
 variable "naming_prefix" {
-  description = "Prefix to use for naming of resources."
-  type        = string
-}
-
-variable "prefix" {
   description = "Naming prefix for resources. Should be 3-8 characters."
   type        = string
   default     = "motteweb"
 
   validation {
-    condition     = length(var.prefix) >= 3 && length(var.prefix) <= 8
-    error_message = "Naming prefix should be between 3-8 characters. Submitted value was ${length(var.prefix)}."
+    condition     = length(var.naming_prefix) >= 3 && length(var.naming_prefix) <= 8
+    error_message = "Naming prefix should be between 3-8 characters. Submitted value was ${length(var.naming_prefix)}."
   }
 }
 
