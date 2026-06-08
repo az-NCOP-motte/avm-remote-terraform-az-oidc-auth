@@ -14,6 +14,17 @@ terraform {
       version = "~> 0.3"
     }
   }
+  
+  backend "azurerm" {
+
+  } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
+
+  # backend "azurerm" {
+  #   storage_account_name = module.test.azurerm_storage_account.tf_state.name
+  #   resource_group_name  = var.resource_group_name
+  #   container_name       = module.test.azurerm_storage_container.tf_state.name
+  #   key                  = "terraform.tfstate"
+  # }
 }
 
 provider "azurerm" {
