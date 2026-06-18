@@ -2,8 +2,8 @@
 # Start with a app config from Azure then Creates a Terraform Plan through a Service Connection, to post as PR Comment.
 
 variables:
-- group: state-data
-- group: config-data
+- group: '$(environment_name)-state-data'
+- group: '$(environment_name)-config-data'
 - name: service-connection
   value: 'avm-remote-terraform-az-oidc-auth' # Override Variable in Specific Pipeline to use another
 - name: provider
