@@ -16,16 +16,18 @@ steps:
         INPUT_TEXT_FILE="${{ parameters.inputFile }}"
         OUTPUT_FILE="${{ parameters.outputFile }}"
         BUILD_ID="${{ parameters.buildId }}"
+        ORGANIZATION="{{ System.CollectionUri }}"
+        PROJECT="{{ System.TeamProject }}"
 
         echo "📘 Reading Terraform plan from: $INPUT_TEXT_FILE"
 
         # Read entire text file
         PLAN_CONTENT="$(cat "$INPUT_TEXT_FILE")"
 
-        # Build beautiful markdown block
+        # Build beautiful markdown block )
         MARKDOWN=$(cat << 'EOF'
         ## Merge Apply Pipeline follow-up
-        [Go to Merge Apply Pipeline Summary](https://dev.azure.com/az-NCOP-motte/terraform-standardization/_build/results?buildId=__BUILD_ID__&view=results)
+        [Go to Merge Apply Pipeline Summary](__ORGANIZATION__/__PROJECT__/_build/results?buildId=__BUILD_ID__&view=results)
         ---
 
         <details>
