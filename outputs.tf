@@ -1,13 +1,13 @@
-output "azurerm_client_config_object_id" {
-  value = data.azurerm_client_config.current.object_id
+output "azapi_client_config_subscription_id" {
+  value = data.azapi_client_config.current.subscription_id
 }
 
-output "azurerm_client_config_subscription_id" {
-  value = data.azurerm_client_config.current.subscription_id
+output "azapi_client_config_object_id" {
+  value = data.azapi_client_config.current.tenant_id
 }
 
-output "azuread_service_principal_clientID" {
-  value = var.devops_principle_client_id
+output "azuread_service_principal_client_id" {
+  value = data.azuread_service_principal.devops_sp.client_id
 }
 
 output "BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME" {
@@ -19,7 +19,7 @@ output "BACKEND_AZURE_STORAGE_ACCOUNT_NAME" {
 }
 
 output "BACKEND_RESOURCE_GROUP_NAME" {
-  value = azurerm_resource_group.TODO.name
+  value = module.az-environment-resourcegroup.name
 }
 
 output "APP_CONFIG_ENDPOINT" {
