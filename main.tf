@@ -1,41 +1,24 @@
-# TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
-
-
-provider "azurerm" {
-  features {
-
-  }
+provider "azapi" {
   skip_provider_registration = true
-  storage_use_azuread        = true
+  # oidc_azure_service_connection_id = ""
 }
 
-resource "azurerm_resource_group" "TODO" {
+module "az-environment-resourcegroup" {
+  source  = "Azure/avm-res-resources-resourcegroup/azurerm"
+  version = "0.4.0"
+
   location = var.location
   name     = var.resource_group_name # calling code must supply the name
 }
 
-# required AVM resources interfaces
-resource "azurerm_management_lock" "this" {
-  count = var.lock != null ? 1 : 0
-
-  lock_level = var.lock.kind
-  name       = coalesce(var.lock.name, "lock-${var.lock.kind}")
-  scope      = azurerm_resource_group.TODO.id # TODO: Replace with your azurerm resource name
-  notes      = var.lock.kind == "CanNotDelete" ? "Cannot delete the resource or its child resources." : "Cannot delete or modify the resource or its child resources."
+moved {
+  from = azurerm_resource_group.TODO
+  to   = module.az-environment-resourcegroup.azapi_resource.this
 }
 
-data "azurerm_client_config" "current" {}
+data "azapi_client_config" "current" {}
 
-# resource "azurerm_role_assignment" "this" {
-#   for_each = var.role_assignments
-
-#   principal_id                           = each.value.principal_id
-#   scope                                  = azurerm_resource_group.TODO.id # TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
-#   condition                              = each.value.condition
-#   condition_version                      = each.value.condition_version
-#   delegated_managed_identity_resource_id = each.value.delegated_managed_identity_resource_id
-#   principal_type                         = each.value.principal_type
-#   role_definition_id                     = strcontains(lower(each.value.role_definition_id_or_name), lower(local.role_definition_resource_substring)) ? each.value.role_definition_id_or_name : null
-#   role_definition_name                   = strcontains(lower(each.value.role_definition_id_or_name), lower(local.role_definition_resource_substring)) ? null : each.value.role_definition_id_or_name
-#   skip_service_principal_aad_check       = each.value.skip_service_principal_aad_check
-# }
+moved {
+  from = azurerm_client_config.current
+  to   = azapi_client_config.current
+}
