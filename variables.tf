@@ -67,6 +67,15 @@ DESCRIPTION
   nullable    = false
 }
 
+variable "soft_delete_retention_days" {
+  type        = number
+  default     = 7
+  description = <<DESCRIPTION
+The number of days that items are retained before being permanently deleted. Default is 7. Set to `null` for `free` sku.
+DESCRIPTION
+  nullable    = true
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true

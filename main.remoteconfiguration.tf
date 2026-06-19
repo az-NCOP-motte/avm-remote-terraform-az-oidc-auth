@@ -67,7 +67,7 @@ module "avm-res-appconfiguration-configurationstore" {
   public_network_access_enabled = true
   sku                           = "standard"
   purge_protection_enabled      = var.purge_protection_enabled
-  soft_delete_retention_days    = 3
+  soft_delete_retention_days    = var.soft_delete_retention_days
 
   key_values = {
     my_secret_reference = {
