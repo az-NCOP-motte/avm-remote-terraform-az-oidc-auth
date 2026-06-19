@@ -11,6 +11,7 @@ module "key_vault" {
   tenant_id                     = data.azapi_client_config.current.tenant_id
   public_network_access_enabled = true
   network_acls                  = null
+  purge_protection_enabled      = var.purge_protection_enabled
 
   keys = {
     service-principle-client-id = {

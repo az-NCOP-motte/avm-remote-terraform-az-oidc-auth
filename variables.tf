@@ -58,6 +58,15 @@ variable "devops_organization_url" {
   type = string
 }
 
+variable "purge_protection_enabled" {
+  type        = bool
+  default     = true
+  description = <<DESCRIPTION
+This variable controls whether or not purge_protection is enabled for the module.
+DESCRIPTION
+  nullable    = false
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
