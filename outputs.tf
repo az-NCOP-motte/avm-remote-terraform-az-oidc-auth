@@ -10,12 +10,12 @@ output "azuread_service_principal_client_id" {
   value = data.azuread_service_principal.devops_sp.client_id
 }
 
-output "BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME" {
-  value = azurerm_storage_container.tf_state.name
+output "BACKEND_AZURE_STORAGE_CONTAINER_NAME" {
+  value = module.avm-storage-account.containers.tf_state.name
 }
 
 output "BACKEND_AZURE_STORAGE_ACCOUNT_NAME" {
-  value = azurerm_storage_account.tf_state.name
+  value = module.avm-storage-account.name
 }
 
 output "BACKEND_RESOURCE_GROUP_NAME" {
