@@ -1,4 +1,4 @@
-#This file is to implement remote App Config blocks for tfvars
+# #This file is to implement remote App Config blocks for tfvars
 
 # key vault & key
 module "key_vault" {
@@ -6,15 +6,15 @@ module "key_vault" {
   version = "0.10.0"
 
   location                      = module.az-environment-resourcegroup.location
-  name                          = module.naming.key_vault.name_unique
-  resource_group_name           = amodule.az-environment-resourcegroup.name
+  name                          = "${lower(var.environment_name)}-pipeline"
+  resource_group_name           = module.az-environment-resourcegroup.name
   tenant_id                     = data.azapi_client_config.current.tenant_id
   public_network_access_enabled = true
   network_acls                  = null
   purge_protection_enabled      = var.purge_protection_enabled
 
   keys = {
-    service-principle-client-id = {
+    principle = {
       name     = "service-principle-client-id"
       key_type = "RSA"
       key_size = 2048
@@ -50,9 +50,12 @@ module "key_vault" {
       role_definition_id_or_name = "Key Vault Secrets User"
     }
     umi = {
-      principal_id               = azapi_resource.umi.output.properties.principalId
+      principal_id               = data.azapi_client_config.current.object_id
       role_definition_id_or_name = "Key Vault Crypto User"
-      principal_type             = "ServicePrincipal"
+    }
+  }
+}
+
     }
   }
 }
