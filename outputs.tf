@@ -23,5 +23,5 @@ output "BACKEND_RESOURCE_GROUP_NAME" {
 }
 
 output "APP_CONFIG_ENDPOINT" {
-  value = azurerm_app_configuration.TODO.endpoint
+  value = module.app_configuration.endpoint
 }
