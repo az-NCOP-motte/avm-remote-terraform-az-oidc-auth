@@ -58,7 +58,7 @@ module "key_vault" {
 }
 
 # app config and key values
-module "avm-res-appconfiguration-configurationstore" {
+module "app_configuration" {
   source  = "Azure/avm-res-appconfiguration-configurationstore/azure"
   version = "0.5.1"
 
