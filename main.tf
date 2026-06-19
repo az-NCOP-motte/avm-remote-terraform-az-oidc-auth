@@ -11,11 +11,6 @@ module "az-environment-resourcegroup" {
   name     = var.resource_group_name # calling code must supply the name
 }
 
-moved {
-  from = azurerm_resource_group.TODO
-  to   = module.az-environment-resourcegroup.azapi_resource.this
-}
-
 data "azapi_client_config" "current" {}
 
 moved {
