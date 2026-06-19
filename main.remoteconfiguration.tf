@@ -12,6 +12,7 @@ module "key_vault" {
   public_network_access_enabled = true
   network_acls                  = null
   purge_protection_enabled      = var.purge_protection_enabled
+  soft_delete_retention_days    = var.soft_delete_retention_days
 
   keys = {
     principle = {
