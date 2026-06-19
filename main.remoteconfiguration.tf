@@ -28,6 +28,17 @@ module "key_vault" {
       enabled = true
     }
   }
+
+  secrets = {
+    principle = {
+      name = "service-principle-client-id"
+    }
+  }
+
+  secrets_value = {
+    principle = data.azapi_client_config.current.object_id
+  }
+
   role_assignments = {
     admin = {
       principal_id               = data.azapi_client_config.current.object_id
