@@ -9,6 +9,7 @@ module "key_vault" {
   name                          = "${lower(var.environment_name)}-pipeline"
   resource_group_name           = module.az-environment-resourcegroup.name
   tenant_id                     = data.azapi_client_config.current.tenant_id
+  sku_name                      = "standard"
   public_network_access_enabled = true
   network_acls                  = null
   purge_protection_enabled      = var.purge_protection_enabled
@@ -66,7 +67,7 @@ module "app_configuration" {
   name                          = "${lower(var.environment_name)}-pipeline"
   resource_group_resource_id    = module.az-environment-resourcegroup.resource_id
   public_network_access_enabled = true
-  sku                           = "standard"
+  sku                           = "developer"
   purge_protection_enabled      = var.purge_protection_enabled
   soft_delete_retention_days    = var.soft_delete_retention_days
 
