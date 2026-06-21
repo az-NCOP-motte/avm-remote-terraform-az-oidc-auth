@@ -43,11 +43,20 @@ import {
   id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 }
 
+
+locals {
+  prefix = "prod1-"
+  suffix = "git-automation"
+}
+
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "0.4.2"
+  prefix  = [local.prefix]
+  suffix  = [local.suffix]
 }
+
 
 # This is the module call
 # Do not specify location here due to the randomization above.
