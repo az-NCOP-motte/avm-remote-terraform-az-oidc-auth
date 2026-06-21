@@ -66,4 +66,6 @@ module "test" {
   devops_principle_client_id = var.devops_principle_client_id
   naming_prefix              = "motte"
   environment_name           = "def"
+  purge_protection_enabled   = false
+  soft_delete_retention_days = null
 }
