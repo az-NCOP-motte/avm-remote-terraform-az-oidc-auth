@@ -95,9 +95,9 @@ module "app_configuration" {
       key   = "location"
       value = var.location
     }
-    devops_organization_url = {
-      key   = "devops_organization_url"
-      value = var.devops_organization_url
+    devops_organization_name = {
+      key   = "devops_organization_name"
+      value = var.devops_organization_name
     }
     environment_name = {
       key   = "environment_name"

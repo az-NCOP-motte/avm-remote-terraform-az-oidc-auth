@@ -54,7 +54,7 @@ variable "devops_principle_client_id" {
   type = string
 }
 
-variable "devops_organization_url" {
+variable "devops_organization_name" {
   type = string
 }
 

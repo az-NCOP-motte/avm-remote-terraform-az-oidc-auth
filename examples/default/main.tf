@@ -61,7 +61,7 @@ module "test" {
   name                       = "TODO"
   resource_group_name        = var.resource_group_name
   subscription_id            = var.subscription_id
-  devops_organization_url    = var.devops_organization_url
+  devops_organization_name   = var.devops_organization_name
   enable_telemetry           = var.enable_telemetry
   devops_principle_client_id = var.devops_principle_client_id
   naming_prefix              = "motte"
