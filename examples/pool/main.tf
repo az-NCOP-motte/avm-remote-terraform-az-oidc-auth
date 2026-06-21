@@ -53,7 +53,7 @@ module "naming" {
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
 # with a data source.
-module "test" {
+module "this" {
   source = "../../"
 
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
