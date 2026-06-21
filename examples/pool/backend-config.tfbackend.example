@@ -1,0 +1,5 @@
+resource_group_name  = "avm-remote-terraform-az-oidc-auth"
+storage_account_name = "strgmotte"
+container_name       = "tfstate"
+key                  = "terraform.tfstate"
+use_azuread_auth     = true
