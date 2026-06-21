@@ -20,9 +20,9 @@ terraform {
   } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
 
   # backend "azurerm" {
-  #   storage_account_name = module.test.azurerm_storage_account.tf_state.name
+  #   storage_account_name = module.this.module.avm-storage-account.name
   #   resource_group_name  = var.resource_group_name
-  #   container_name       = module.test.azurerm_storage_container.tf_state.name
+  #   container_name       = module.this.module.avm-storage-account.containers.tf_state.name
   #   key                  = "terraform.tfstate"
   # }
 }
