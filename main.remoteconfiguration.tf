@@ -1,153 +1,107 @@
-#This file is to implement remote App Config blocks for tfvars
+# #This file is to implement remote App Config blocks for tfvars
 
-resource "azurerm_key_vault" "TODO" {
-  name                        = "${lower(var.environment_name)}-motte-pipeline"
-  location                    = azurerm_resource_group.TODO.location
-  resource_group_name         = azurerm_resource_group.TODO.name
-  enabled_for_disk_encryption = true
-  tenant_id                   = data.azurerm_client_config.current.tenant_id
-  sku_name                    = "standard"
-  soft_delete_retention_days  = 7
-  purge_protection_enabled    = true
-  rbac_authorization_enabled  = true
+# key vault & key
+module "key_vault" {
+  source  = "Azure/avm-res-keyvault-vault/azurerm"
+  version = "0.10.0"
 
-  depends_on = [
-    azurerm_role_assignment.key_vault_contributer_devops_sp,
-    azurerm_role_assignment.key_vault_devops_sp,
-  ]
-}
+  location                      = module.az-environment-resourcegroup.location
+  name                          = "${lower(var.environment_name)}-pipeline"
+  resource_group_name           = module.az-environment-resourcegroup.name
+  tenant_id                     = data.azapi_client_config.current.tenant_id
+  sku_name                      = "standard"
+  public_network_access_enabled = true
+  network_acls                  = null
+  purge_protection_enabled      = var.purge_protection_enabled
+  soft_delete_retention_days    = var.soft_delete_retention_days
 
-resource "azurerm_key_vault_key" "devops_principle_client" {
-  name         = "service-principle-client-id"
-  key_vault_id = azurerm_key_vault.TODO.id
-  key_type     = "RSA"
-  key_size     = 2048
-  key_opts = [
-    "decrypt",
-    "encrypt",
-    "sign",
-    "unwrapKey",
-    "verify",
-    "wrapKey"
-  ]
-
-  depends_on = [
-    azurerm_role_assignment.key_vault_contributer_devops_sp,
-    azurerm_role_assignment.key_vault_devops_sp,
-  ]
-}
-
-resource "azurerm_key_vault_secret" "devops_principle_client" {
-  name         = azurerm_key_vault_key.devops_principle_client.name
-  value        = var.devops_principle_client_id # todo: consider using data.azurerm_client_config.current.object_id (as login principle is set in pipeline)
-  key_vault_id = azurerm_key_vault.TODO.id
-
-  depends_on = [
-    azurerm_role_assignment.key_vault_contributer_devops_sp,
-    azurerm_role_assignment.key_vault_devops_sp,
-  ]
-}
-
-resource "azurerm_app_configuration" "TODO" {
-  name                                 = "${lower(var.environment_name)}-pipeline"
-  resource_group_name                  = azurerm_resource_group.TODO.name
-  location                             = azurerm_resource_group.TODO.location
-  local_auth_enabled                   = true
-  public_network_access                = "Enabled"
-  data_plane_proxy_authentication_mode = "Pass-through"
-  # purge_protection_enabled             = true # defaults to false
-  # soft_delete_retention_days           = 1
-  # sku                                  = "developer" # defaults to free
-
-  tags = {
-    environment = "development"
+  keys = {
+    principle = {
+      name     = "service-principle-client-id"
+      key_type = "RSA"
+      key_size = 2048
+      key_opts = [
+        "decrypt",
+        "encrypt",
+        "sign",
+        "unwrapKey",
+        "verify",
+        "wrapKey"
+      ]
+      enabled = true
+    }
   }
 
-  depends_on = [
-    azurerm_role_assignment.app_config_devops_sp
-  ]
+  secrets = {
+    principle = {
+      name = "service-principle-client-id"
+    }
+  }
+
+  secrets_value = {
+    principle = data.azapi_client_config.current.object_id
+  }
+
+  role_assignments = {
+    rbac_key_vault_admin = local.role_assignments.vault_admin
+    rbac_key_vault_secrets_user = local.role_assignments.secrets_user
+    rbac_key_vault_crypto_user = local.role_assignments.crypto_user
+  }
 }
 
-resource "azurerm_app_configuration_key" "az_app_config_resource_group_name" {
-  configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "resource_group_name"
-  value                  = azurerm_resource_group.TODO.name
+# app config and key values
+module "app_configuration" {
+  source  = "Azure/avm-res-appconfiguration-configurationstore/azure"
+  version = "0.5.1"
 
-  depends_on = [
-    azurerm_role_assignment.app_config_devops_sp
-  ]
-}
+  location                      = module.az-environment-resourcegroup.location
+  name                          = "${lower(var.environment_name)}-pipeline"
+  resource_group_resource_id    = module.az-environment-resourcegroup.resource_id
+  public_network_access_enabled = true
+  sku                           = "developer"
+  purge_protection_enabled      = var.purge_protection_enabled
+  soft_delete_retention_days    = var.soft_delete_retention_days
 
-# resource "azurerm_app_configuration_key" "az_app_config_enable_telemetry" {
-#   configuration_store_id = azurerm_app_configuration.TODO.id
-#   key                    = "enable_telemetry"
-#   value                  = azurerm_storage_account.tf_state.name
+  key_values = {
+    my_secret_reference = {
+      key          = "MySecretPrinciple"
+      content_type = "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+      value = jsonencode({
+        uri = join("/", slice(split("/", module.key_vault.secrets.principle.id), 0, 5))
+      })
 
-#   depends_on = [
-#     azurerm_role_assignment.app_config_devops_sp
-#   ]
-# }
+    }
+    resource_group_name = {
+      key   = "resource_group_name"
+      value = module.az-environment-resourcegroup.name
+    }
+    enable_telemetry = {
+      key   = "enable_telemetry"
+      value = var.enable_telemetry
+    }
+    subscription_id = {
+      key   = "subscription_id"
+      value = var.subscription_id
+    }
+    location = {
+      key   = "location"
+      value = var.location
+    }
+    devops_organization_name = {
+      key   = "devops_organization_name"
+      value = var.devops_organization_name
+    }
+    environment_name = {
+      key   = "environment_name"
+      value = var.environment_name
+    }
+    devops_principle_client_id = {
+      key   = "devops_principle_client_id"
+      value = var.devops_principle_client_id
+    }
+  }
 
-resource "azurerm_app_configuration_key" "az_app_config_subscription_id" { # todo: consider using data.azurerm_client_config.current.subscription_id
-  configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "subscription_id"
-  value                  = var.subscription_id
-
-  depends_on = [
-    azurerm_role_assignment.app_config_devops_sp
-  ]
-}
-
-resource "azurerm_app_configuration_key" "az_app_config_location" {
-  configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "location"
-  value                  = azurerm_resource_group.TODO.location
-
-  depends_on = [
-    azurerm_role_assignment.app_config_devops_sp
-  ]
-}
-
-resource "azurerm_app_configuration_key" "az_app_config_devops_organisation_url" {
-  configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "devops_organization_url"
-  value                  = var.devops_organization_url
-
-  depends_on = [
-    azurerm_role_assignment.app_config_devops_sp
-  ]
-}
-
-resource "azurerm_app_configuration_key" "az_app_config_environment_name" {
-  configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "environment_name"
-  value                  = var.environment_name
-
-  depends_on = [
-    azurerm_role_assignment.app_config_devops_sp
-  ]
-}
-
-# Optional devops_principle_client_id App Config without Key Vault Usage
-# resource "azurerm_app_configuration_key" "az_app_config_devops_principle_client_id" {
-#   configuration_store_id = azurerm_app_configuration.TODO.id
-#   key                    = "devops_principle_client_id"
-#   value                  = azurerm_resource_group.TODO.name
-
-#   depends_on = [
-#     azurerm_role_assignment.app_config_devops_sp
-#   ]
-# }
-
-resource "azurerm_app_configuration_key" "az_app_config_devops_principle_client" {
-  configuration_store_id = azurerm_app_configuration.TODO.id
-  key                    = "devops_principle_client_id_vault_ref"
-  type                   = "vault"
-  vault_key_reference    = azurerm_key_vault_secret.devops_principle_client.versionless_id
-
-  depends_on = [
-    azurerm_role_assignment.app_config_devops_sp,
-    azurerm_role_assignment.key_vault_contributer_devops_sp,
-    azurerm_role_assignment.key_vault_devops_sp,
-  ]
+  role_assignments = {
+    rbac_app_configuration_data_owner = local.role_assignments.app_config_data_owner
+  }
 }

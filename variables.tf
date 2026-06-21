@@ -54,8 +54,26 @@ variable "devops_principle_client_id" {
   type = string
 }
 
-variable "devops_organization_url" {
+variable "devops_organization_name" {
   type = string
+}
+
+variable "purge_protection_enabled" {
+  type        = bool
+  default     = true
+  description = <<DESCRIPTION
+This variable controls whether or not purge_protection is enabled for the module.
+DESCRIPTION
+  nullable    = false
+}
+
+variable "soft_delete_retention_days" {
+  type        = number
+  default     = 7
+  description = <<DESCRIPTION
+The number of days that items are retained before being permanently deleted. Default is 7. Set to `null` for `free` sku.
+DESCRIPTION
+  nullable    = true
 }
 
 variable "enable_telemetry" {
@@ -121,4 +139,21 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+variable "resource_types" {
+  type = object({
+    devcenter = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
+    project   = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
+    lock      = optional(string, "Microsoft.Authorization/locks@2020-05-01")
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Override the AzAPI `<provider>/<resource>@<api-version>` strings used by this module. Each key defaults to a tested value; supply only the keys you want to override. Useful when targeting a sovereign cloud with older API versions, or when opting into a newer preview API.
+
+- `devcenter`  - The devcenter, used by the project.
+- `project`    - The project, used by the pool.
+- `lock`       - Management lock applied to the storage account (and to private endpoints when configured).
+DESCRIPTION
+  nullable    = false
 }

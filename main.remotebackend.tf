@@ -1,18 +1,25 @@
-#This file is to implement remote backend resource blocks for tfvars
+#This file is to implement remote backend resource blocks for tf state
 
-resource "azurerm_storage_account" "tf_state" {
+module "avm-storage-account" {
+  source                          = "Azure/avm-res-storage-storageaccount/azurerm"
+  location                        = module.az-environment-resourcegroup.location
   name                            = "${lower(var.environment_name)}mottepipeline"
-  resource_group_name             = azurerm_resource_group.TODO.name
-  location                        = azurerm_resource_group.TODO.location
+  parent_id                       = module.az-environment-resourcegroup.resource_id
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   shared_access_key_enabled       = false
   default_to_oauth_authentication = true
-}
+  public_network_access_enabled   = true
+  network_rules = null
 
-# Storage Container
-resource "azurerm_storage_container" "tf_state" {
-  name                  = "tfstate"
-  storage_account_id    = azurerm_storage_account.tf_state.id
-  container_access_type = "private"
+  containers = {
+    tf_state = {
+      name                       = "tfstate"
+      container_access_type      = "private"
+      rbac_authorization_enabled = true
+      role_assignments = {
+        rbac_storage_blob_data_contributor = local.role_assignments.storage_blob_data_contributor
+      }
+    }
+  }
 }

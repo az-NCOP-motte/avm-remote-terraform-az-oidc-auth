@@ -14,7 +14,7 @@ terraform {
       version = "~> 0.3"
     }
   }
-  
+
   backend "azurerm" {
 
   } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
@@ -39,24 +39,15 @@ provider "azurerm" {
 
 # import resource group that was created in set-up
 import {
-  to = module.this.module.az-environment-resourcegroup.azapi_resource.this
+  to = module.test.module.az-environment-resourcegroup.azapi_resource.this
   id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
-}
-
-
-locals {
-  prefix = "prod1-"
-  suffix = "git-automation"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.4.2"
-  prefix  = [local.prefix]
-  suffix  = [local.suffix]
+  version = "~> 0.3"
 }
-
 
 # This is the module call
 # Do not specify location here due to the randomization above.
@@ -67,6 +58,60 @@ module "this" {
 
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
+
+  devcenters = {
+    center_1 = {
+      name = "git-automation"
+      projects = {
+        project_1 = {
+          name = "git-automation"
+          pools = {
+            pool1 = {
+              name                 = "git-automation"
+              storage_account_type = "Standard"
+              maximum_concurrency  = 1
+              profile_images = [
+                {
+                  "aliases" : [
+                    "ubuntu-24.04-g2",
+                    "git-automation",
+                  ],
+                  "well_known_image_name" : "ubuntu-24.04-g2/latest"
+                }
+              ]
+            }
+            pool2 = {
+              name                = "git-automation-two"
+              maximum_concurrency = 1
+            }
+          }
+        }
+      }
+    }
+  }
+
+  # projects = {
+  #   project_1 = {
+  #     name       = "pool"
+  #     center_key = "center_1"
+  #     pools = {
+  #       pool1 = {
+  #         name                = "pool" # 3 - 44
+  #         project_key         = "project_1"
+  #         maximum_concurrency = 2
+  #       }
+  #     }
+  #   }
+  # }
+
+  # pools = {
+  #   pool1 = {
+  #     name                = "pool" # 3 - 44
+  #     project_key         = "project_1"
+  #     maximum_concurrency = 2
+  #   }
+  # }
+
   name                       = "TODO"
   resource_group_name        = var.resource_group_name
   subscription_id            = var.subscription_id
@@ -74,12 +119,7 @@ module "this" {
   enable_telemetry           = var.enable_telemetry
   devops_principle_client_id = var.devops_principle_client_id
   naming_prefix              = "motte"
-  environment_name           = "def"
+  environment_name           = "proto1"
   purge_protection_enabled   = false
   soft_delete_retention_days = null
-}
-
-moved {
-  from = module.test
-  to = module.this
 }
