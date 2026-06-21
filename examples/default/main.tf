@@ -39,7 +39,7 @@ provider "azurerm" {
 
 # import resource group that was created in set-up
 import {
-  to = module.test.azurerm_resource_group.TODO
+  to = module.test.module.az-environment-resourcegroup.azapi_resource.this
   id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 }
 
