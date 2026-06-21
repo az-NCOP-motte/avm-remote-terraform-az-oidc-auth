@@ -39,7 +39,7 @@ provider "azurerm" {
 
 # import resource group that was created in set-up
 import {
-  to = module.test.module.az-environment-resourcegroup.azapi_resource.this
+  to = module.this.module.az-environment-resourcegroup.azapi_resource.this
   id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 }
 
@@ -68,4 +68,9 @@ module "this" {
   environment_name           = "def"
   purge_protection_enabled   = false
   soft_delete_retention_days = null
+}
+
+moved {
+  from = module.test
+  to = module.this
 }
