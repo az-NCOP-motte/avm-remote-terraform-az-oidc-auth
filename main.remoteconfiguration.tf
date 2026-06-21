@@ -108,4 +108,11 @@ module "app_configuration" {
       value = var.devops_principle_client_id
     }
   }
+
+  role_assignments = {
+    data_owner = {
+      principal_id               = data.azapi_client_config.current.object_id
+      role_definition_id_or_name = "App Configuration Data Owner"
+    }
+  }
 }
