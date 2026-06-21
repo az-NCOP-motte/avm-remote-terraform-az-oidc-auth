@@ -1,4 +1,4 @@
-#This file is to implement remote backend resource blocks for tfvars
+#This file is to implement remote backend resource blocks for tf state
 
 module "avm-storage-account" {
   source                          = "Azure/avm-res-storage-storageaccount/azurerm"
