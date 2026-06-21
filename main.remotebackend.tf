@@ -18,10 +18,7 @@ module "avm-storage-account" {
       container_access_type      = "private"
       rbac_authorization_enabled = true
       role_assignments = {
-        rbac_storage_blob_data_contributor = {
-          role_definition_id_or_name = "Storage Blob Data Contributor"
-          principal_id               = data.azapi_client_config.current.object_id
-        }
+        rbac_storage_blob_data_contributor = local.role_assignments.storage_blob_data_contributor
       }
     }
   }

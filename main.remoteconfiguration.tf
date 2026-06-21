@@ -43,18 +43,9 @@ module "key_vault" {
   }
 
   role_assignments = {
-    admin = {
-      principal_id               = data.azapi_client_config.current.object_id
-      role_definition_id_or_name = "Key Vault Administrator"
-    }
-    user = {
-      principal_id               = data.azapi_client_config.current.object_id
-      role_definition_id_or_name = "Key Vault Secrets User"
-    }
-    umi = {
-      principal_id               = data.azapi_client_config.current.object_id
-      role_definition_id_or_name = "Key Vault Crypto User"
-    }
+    rbac_key_vault_admin = local.role_assignments.vault_admin
+    rbac_key_vault_secrets_user = local.role_assignments.secrets_user
+    rbac_key_vault_crypto_user = local.role_assignments.crypto_user
   }
 }
 
@@ -111,9 +102,6 @@ module "app_configuration" {
   }
 
   role_assignments = {
-    data_owner = {
-      principal_id               = data.azapi_client_config.current.object_id
-      role_definition_id_or_name = "App Configuration Data Owner"
-    }
+    rbac_app_configuration_data_owner = local.role_assignments.app_config_data_owner
   }
 }

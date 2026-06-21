@@ -9,6 +9,11 @@ module "az-environment-resourcegroup" {
 
   location = var.location
   name     = var.resource_group_name # calling code must supply the name
+
+  role_assignments = {
+    global_owner = local.role_assignments.global_owner
+  }
+
 }
 
 data "azapi_client_config" "current" {}
