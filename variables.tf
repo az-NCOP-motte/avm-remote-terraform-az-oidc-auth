@@ -140,3 +140,20 @@ variable "tags" {
   default     = null
   description = "(Optional) Tags of the resource."
 }
+
+variable "resource_types" {
+  type = object({
+    devcenter = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
+    project   = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
+    lock      = optional(string, "Microsoft.Authorization/locks@2020-05-01")
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Override the AzAPI `<provider>/<resource>@<api-version>` strings used by this module. Each key defaults to a tested value; supply only the keys you want to override. Useful when targeting a sovereign cloud with older API versions, or when opting into a newer preview API.
+
+- `devcenter`  - The devcenter, used by the project.
+- `project`    - The project, used by the pool.
+- `lock`       - Management lock applied to the storage account (and to private endpoints when configured).
+DESCRIPTION
+  nullable    = false
+}
