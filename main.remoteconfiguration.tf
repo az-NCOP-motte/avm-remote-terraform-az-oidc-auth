@@ -6,7 +6,7 @@ module "key_vault" {
   version = "0.10.0"
 
   location                      = module.az-environment-resourcegroup.location
-  name                          = "${lower(var.environment_name)}-pipeline"
+  name                          = module.naming.key_vault.name_unique
   resource_group_name           = module.az-environment-resourcegroup.name
   tenant_id                     = data.azapi_client_config.current.tenant_id
   sku_name                      = "standard"
@@ -46,62 +46,5 @@ module "key_vault" {
     rbac_key_vault_admin = local.role_assignments.vault_admin
     rbac_key_vault_secrets_user = local.role_assignments.secrets_user
     rbac_key_vault_crypto_user = local.role_assignments.crypto_user
-  }
-}
-
-# app config and key values
-module "app_configuration" {
-  source  = "Azure/avm-res-appconfiguration-configurationstore/azure"
-  version = "0.5.1"
-
-  location                      = module.az-environment-resourcegroup.location
-  name                          = "${lower(var.environment_name)}-pipeline"
-  resource_group_resource_id    = module.az-environment-resourcegroup.resource_id
-  public_network_access_enabled = true
-  sku                           = "developer"
-  purge_protection_enabled      = var.purge_protection_enabled
-  soft_delete_retention_days    = var.soft_delete_retention_days
-
-  key_values = {
-    my_secret_reference = {
-      key          = "MySecretPrinciple"
-      content_type = "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
-      value = jsonencode({
-        uri = join("/", slice(split("/", module.key_vault.secrets.principle.id), 0, 5))
-      })
-
-    }
-    resource_group_name = {
-      key   = "resource_group_name"
-      value = module.az-environment-resourcegroup.name
-    }
-    enable_telemetry = {
-      key   = "enable_telemetry"
-      value = var.enable_telemetry
-    }
-    subscription_id = {
-      key   = "subscription_id"
-      value = var.subscription_id
-    }
-    location = {
-      key   = "location"
-      value = var.location
-    }
-    devops_organization_name = {
-      key   = "devops_organization_name"
-      value = var.devops_organization_name
-    }
-    environment_name = {
-      key   = "environment_name"
-      value = var.environment_name
-    }
-    devops_principle_client_id = {
-      key   = "devops_principle_client_id"
-      value = var.devops_principle_client_id
-    }
-  }
-
-  role_assignments = {
-    rbac_app_configuration_data_owner = local.role_assignments.app_config_data_owner
   }
 }

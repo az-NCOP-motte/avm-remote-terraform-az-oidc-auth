@@ -1,0 +1,3 @@
+locals {
+  appconfigurations = var.appconfigurations
+}

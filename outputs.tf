@@ -30,6 +30,9 @@ output "BACKEND_RESOURCE_GROUP_NAME" {
   value = module.az-environment-resourcegroup.name
 }
 
-output "APP_CONFIG_ENDPOINT" {
-  value = module.app_configuration.endpoint
+output "APP_CONFIG_ENDPOINTS" {
+  value = {
+    for key, sa in module.appconfigurations :
+    key => sa.endpoint
+  }
 }
