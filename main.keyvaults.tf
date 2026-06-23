@@ -4,7 +4,7 @@ module "keyvaults" {
   for_each = local.keyvaults
 
   location                      = module.az-environment-resourcegroup.location
-  name                          = module.naming.key_vault.name_unique
+  name                          = each.value.name
   resource_group_name           = module.az-environment-resourcegroup.name
   tenant_id                     = data.azapi_client_config.current.tenant_id
   sku_name                      = each.value.sku

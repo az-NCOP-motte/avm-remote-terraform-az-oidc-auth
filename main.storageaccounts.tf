@@ -2,14 +2,13 @@
 
 module "storageaccounts" {
   source   = "Azure/avm-res-storage-storageaccount/azurerm"
-  version = "0.7.2"
+  version  = "0.7.2"
   for_each = local.storageaccounts
 
   location                        = module.az-environment-resourcegroup.location
   name                            = each.value.name
   parent_id                       = module.az-environment-resourcegroup.resource_id
-  account_tier                    = each.value.account_tier
-  account_replication_type        = each.value.account_replication_type
+  account_sku_name                = each.value.account_sku_name
   shared_access_key_enabled       = each.value.shared_access_key_enabled
   default_to_oauth_authentication = each.value.default_to_oauth_authentication
   public_network_access_enabled   = each.value.public_network_access_enabled

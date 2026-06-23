@@ -9,9 +9,11 @@ This is a template repo for Terraform Azure Verified Modules.
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>=1.3.7)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~>3.43.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.8)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (4.71.0, <5.0.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -19,19 +21,10 @@ The following requirements are needed by this module:
 
 The following resources are used by this module:
 
-- [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
-- [azurerm_resource_group.TODO](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [azurerm_role_assignment.app_config_devops_sp](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_role_assignment.blob_devops_sp](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_role_assignment.key_vault_contributer_devops_sp](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_role_assignment.key_vault_devops_sp](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_role_assignment.owner_devops_sp](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_storage_account.storage](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
-- [azurerm_storage_container.strg_tfstate](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
-- [azapi_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azapi/latest/docs/data-sources/client_config) (data source)
+- [azapi_client_config.current](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
+- [azapi_client_config.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
 - [azuread_service_principal.devops_sp](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) (data source)
 - [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
@@ -40,33 +33,207 @@ The following resources are used by this module:
 
 The following input variables are required:
 
-### <a name="input_devops-principle-client-id"></a> [devops-principle-client-id](#input\_devops-principle-client-id)
+### <a name="input_devops_organization_name"></a> [devops\_organization\_name](#input\_devops\_organization\_name)
 
-Description: n/a
-
-Type: `string`
-
-### <a name="input_name"></a> [name](#input\_name)
-
-Description: The name of the this resource.
+Description: This variable helps connect the pool to the devops organization.
 
 Type: `string`
 
-### <a name="input_naming_prefix"></a> [naming\_prefix](#input\_naming\_prefix)
+### <a name="input_devops_principle_client_id"></a> [devops\_principle\_client\_id](#input\_devops\_principle\_client\_id)
 
-Description: Prefix to use for naming of resources.
+Description: The service principal client ID.
 
 Type: `string`
 
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
-Description: Name of the resource group provided by tfvars file.
+Description: Name of the resource group.
 
 Type: `string`
 
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_appconfigurations"></a> [appconfigurations](#input\_appconfigurations)
+
+Description: A map of app configurations to create for tfvars. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+
+- `name` - (Required) The name of the Container which should be created within the Storage Account. Changing this forces a new resource to be created.
+- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the storage account.
+- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of the storage account.
+- `public_network_access_enabled` (Optional) Whether to enable public network access, default is `false`.
+- `sku`- (Optional) The SKU of the resource. Valid values are free, developer, standard, and premium. Set `soft_delete_retention_days` to `null` for free sku. Default is `developer`
+- `purge_protection_enabled` - (Optional) Whether to enable purge protection, default is `false`.
+- `soft_delete_retention_days` - (Optional) The number of days that items are retained before being permanently deleted. Default is `null`.
+- `vault_references` - (Optional) Map of objects for vault references. `secret_key` refers to the key value from the `keys` object within `keyvaults` input variable.
+- `key_values` - (Optional) A map a key-value pairs to prefill the configuration with.
+
+- `role_assignments` - (Optional) A map of role assignments to create on the container. Defaults to `{}`. See `var.role_assignments` for the attribute schema.
+
+Example Input:
+```hcl
+appconfigurations = {
+  tf_tfvars = {
+    name                       = module.naming.app_configuration.name_unique
+    purge_protection_enabled   = false
+    soft_delete_retention_days = null
+    vault_references = {
+      key_ref_1 = {
+        name = "vault_ref1"
+        secret_key = "secret_1"
+      }
+    }
+  }
+}
+```
+
+Type:
+
+```hcl
+map(object({
+    name                          = string
+    location                      = optional(string, null)
+    resource_group_name           = optional(string, null)
+    public_network_access_enabled = optional(bool, false)
+    sku                           = optional(string, "developer")
+    purge_protection_enabled      = optional(bool, false)
+    soft_delete_retention_days    = optional(number, null)
+    vault_references = optional(map(object({
+      name       = string
+      secret_key = string
+    })), {})
+    key_values = optional(map(object({
+      key          = string
+      value        = string
+      content_type = optional(string, null)
+      label        = optional(string, null)
+      tags         = optional(map(string), null)
+    })), {})
+
+    role_assignments = optional(map(object({
+      role_definition_id_or_name             = string
+      principal_id                           = string
+      principal_type                         = optional(string, null)
+      description                            = optional(string, null)
+      skip_service_principal_aad_check       = optional(bool, false)
+      condition                              = optional(string, null)
+      condition_version                      = optional(string, null)
+      delegated_managed_identity_resource_id = optional(string, null)
+    })), {})
+  }))
+```
+
+Default: `{}`
+
+### <a name="input_devcenters"></a> [devcenters](#input\_devcenters)
+
+Description: A map of dev centers to create for a pool. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+
+- `name` - (Required) The name of the Container which should be created within the Storage Account. Changing this forces a new resource to be created.
+- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the storage account.
+- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of the storage account.
+- `projects` - (Optional) A map of project objects. Defaults to `{}`.
+- `role_assignments` - (Optional) A map of role assignments to create on the container. Defaults to `{}`. See `var.role_assignments` for the attribute schema.
+
+Example Input:
+```hcl
+devcenters = {
+  center_1 = {
+    name = module.naming.app_configuration.name_unique
+    projects = {
+      project_1 = {
+        name = module.naming.app_configuration.name_unique
+        pools = {
+          pool1 = {
+            name                 = module.naming.app_configuration.name_unique
+            storage_account_type = "Standard"
+            maximum_concurrency  = 1
+            profile_images = [
+              {
+                "aliases" : [
+                  "ubuntu-24.04-g2",
+                  "git-automation",
+                ],
+                "well_known_image_name" : "ubuntu-24.04-g2/latest"
+              }
+            ]
+          }
+          pool2 = {
+            name                = module.naming.app_configuration.name_unique
+            maximum_concurrency = 1
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Type:
+
+```hcl
+map(object({
+    name                = string
+    location            = optional(string, null)
+    resource_group_name = optional(string, null)
+
+    projects = optional(map(object({
+      name                = string
+      location            = optional(string, null)
+      resource_group_name = optional(string, null)
+      # center_key          = string
+      pools = optional(map(object({
+        name = string
+        # project_key         = string
+        maximum_concurrency           = number
+        storage_account_type          = optional(string, "Standard")
+        sku_name                      = optional(string, "Standard_D2ads_v5")
+        prediction_profile_automatice = optional(string, "MostCostEffective")
+        # image_alias                   = optional(string, "az-pipeline")
+        # well_known_image_name         = optional(string, "ubuntu-24.04-g2/latest")
+        profile_images = optional(list(object({
+          resource_id           = optional(string)
+          well_known_image_name = optional(string)
+          buffer                = optional(string, "*")
+          aliases               = optional(list(string))
+          })), [
+          {
+            "aliases" : [
+              "ubuntu-24.04-g2",
+              "az-pipeline",
+            ],
+            "well_known_image_name" : "ubuntu-24.04-g2/latest"
+          }
+        ])
+
+      })), {})
+
+      role_assignments = optional(map(object({
+        role_definition_id_or_name             = string
+        principal_id                           = string
+        principal_type                         = optional(string, null)
+        description                            = optional(string, null)
+        skip_service_principal_aad_check       = optional(bool, false)
+        condition                              = optional(string, null)
+        condition_version                      = optional(string, null)
+        delegated_managed_identity_resource_id = optional(string, null)
+      })), {})
+    })), {})
+    role_assignments = optional(map(object({
+      role_definition_id_or_name             = string
+      principal_id                           = string
+      principal_type                         = optional(string, null)
+      description                            = optional(string, null)
+      skip_service_principal_aad_check       = optional(bool, false)
+      condition                              = optional(string, null)
+      condition_version                      = optional(string, null)
+      delegated_managed_identity_resource_id = optional(string, null)
+    })), {})
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
@@ -80,11 +247,148 @@ Default: `true`
 
 ### <a name="input_environment_name"></a> [environment\_name](#input\_environment\_name)
 
-Description: Name of the environment provided by tfvars file.
+Description: Name of the environment to manage.
 
 Type: `string`
 
-Default: `"TODO"`
+Default: `"todo"`
+
+### <a name="input_keyvaults"></a> [keyvaults](#input\_keyvaults)
+
+Description: Optional. A map of key vaults to create which can be linked to an app config. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+
+- `name` - (Required) The name of the Container which should be created within the Storage Account. Changing this forces a new resource to be created.
+- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the storage account.
+- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of the storage account.
+- `role_assignments` - (Optional) A map of role assignments to create on the container. Defaults to `{}`. See `var.role_assignments` for the attribute schema.
+- `network_acls` - (Optional) The network ACL configuration for the Key Vault. If not specified then the Key Vault will be created with a firewall that blocks access. Specify `null` to create the Key Vault with no firewall. - `bypass` - (Optional) Should Azure Services bypass the ACL. Possible values are `AzureServices` and `None`. Defaults to `None`. - `default_action` - (Optional) The default action when no rule matches. Possible values are `Allow` and `Deny`. Defaults to `Deny`. - `ip_rules` - (Optional) A list of IP rules in CIDR format. Defaults to `[]`. - `virtual_network_subnet_ids` - (Optional) When using with Service Endpoints, a list of subnet IDs to associate with the Key Vault. Defaults to `[]`.
+- `public_network_access_enabled` - (Optional) Specifies whether public access is permitted. Default `false`
+- `sku` - (Optional) The SKU name of the Key Vault. Default is `standard`. Possible values are `standard` and `premium`.
+- `purge_protection_enabled` - (Optional) Specifies whether protection against purge is enabled for this Key Vault. Note once enabled this cannot be disabled.
+- `soft_delete_retention_days` - (Optional) The number of days that items should be retained for once soft-deleted. This value can be between 7 and 90 (the default) days.
+- `keys` - (Optional) A map of keys to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.  - `name` - The name of the key. - `key_type` - The type of the key. Possible values are `EC` and `RSA`. - `key_opts` - A list of key options. Possible values are `decrypt`, `encrypt`, `sign`, `unwrapKey`, `verify`, and `wrapKey`. - `key_size` - The size of the key. Required for `RSA` keys. - `curve` - The curve of the key. Required for `EC` keys. Possible values are `P-256`, `P-256K`, `P-384`, and `P-521`. The API will default to `P-256` if nothing is specified. - `not_before_date` - The not before date of the key. - `expiration_date` - The expiration date of the key. - `tags` - A mapping of tags to assign to the key. - `rotation_policy` - The rotation policy of the key. - `automatic` - The automatic rotation policy of the key. - `time_after_creation` - The time after creation of the key before it is automatically rotated. - `time_before_expiry` - The time before expiry of the key before it is automatically rotated. - `expire_after` - The time after which the key expires. - `notify_before_expiry` - The time before expiry of the key when notification emails will be sent. Supply role assignments in the same way as for `var.role_assignments`.
+- `secrets` - (Optional) A map of secrets to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. - `name` - The name of the secret. - `content_type` - The content type of the secret. - `tags` - A mapping of tags to assign to the secret. - `not_before_date` - The not before date of the secret. - `expiration_date` - The expiration date of the secret. Supply role assignments in the same way as for `var.role_assignments`. > Note: the `value` of the secret is supplied via the `var.secrets_value` variable. Make sure to use the same map key.
+- `secrets_value` - (Optional) A map of secret keys to values. The map key is the supplied input to `var.secrets`. The map value is the secret value. This is a separate variable to `var.secrets` because it is sensitive and therefore cannot be used in a `for_each` loop.
+
+Example Input:
+```hcl
+keyvaults = {
+  key_vault_1 = {
+    name = module.naming.key_vault.name_unique
+    keys = {
+      secret_1 = {
+        name     = module.naming.key_vault_key.name_unique
+        key_type = "RSA"
+        key_size = 2048
+        key_opts = [
+          "decrypt",
+          "encrypt",
+          "sign",
+          "unwrapKey",
+          "verify",
+          "wrapKey"
+        ]
+        enabled = true
+      }
+    }
+
+    secrets = {
+      secret_1 = {
+        name = module.naming.key_vault_secret.name_unique
+      }
+    }
+
+    secrets_value = {
+      secret_1 = "supersecretpassword123"
+    }
+  }
+}
+```
+
+Type:
+
+```hcl
+map(object({
+    name                = string
+    location            = optional(string, null)
+    resource_group_name = optional(string, null)
+
+    network_acls = optional(object({
+      bypass                     = optional(string, "None")
+      default_action             = optional(string, "Deny")
+      ip_rules                   = optional(list(string), [])
+      virtual_network_subnet_ids = optional(list(string), [])
+      })
+    , null)
+    public_network_access_enabled = optional(bool, false)
+    sku                           = optional(string, "standard")
+    purge_protection_enabled      = optional(bool, false)
+    soft_delete_retention_days    = optional(number, null)
+
+    keys = optional(map(object({
+      name            = string
+      key_type        = string
+      key_opts        = optional(list(string), ["sign", "verify"])
+      key_size        = optional(number, null)
+      curve           = optional(string, null)
+      not_before_date = optional(string, null)
+      expiration_date = optional(string, null)
+      tags            = optional(map(any), null)
+      role_assignments = optional(map(object({
+        role_definition_id_or_name             = string
+        principal_id                           = string
+        description                            = optional(string, null)
+        skip_service_principal_aad_check       = optional(bool, false)
+        condition                              = optional(string, null)
+        condition_version                      = optional(string, null)
+        delegated_managed_identity_resource_id = optional(string, null)
+        principal_type                         = optional(string, null)
+      })), {})
+      rotation_policy = optional(object({
+        automatic = optional(object({
+          time_after_creation = optional(string, null)
+          time_before_expiry  = optional(string, null)
+        }), null)
+        expire_after         = optional(string, null)
+        notify_before_expiry = optional(string, null)
+      }), null)
+    })), {})
+
+    secrets = optional(map(object({
+      name            = string
+      content_type    = optional(string, null)
+      tags            = optional(map(any), null)
+      not_before_date = optional(string, null)
+      expiration_date = optional(string, null)
+
+      role_assignments = optional(map(object({
+        role_definition_id_or_name             = string
+        principal_id                           = string
+        description                            = optional(string, null)
+        skip_service_principal_aad_check       = optional(bool, false)
+        condition                              = optional(string, null)
+        condition_version                      = optional(string, null)
+        delegated_managed_identity_resource_id = optional(string, null)
+        principal_type                         = optional(string, null)
+      })), {})
+    })), {})
+
+    secrets_value = optional(map(string), null)
+
+    role_assignments = optional(map(object({
+      role_definition_id_or_name             = string
+      principal_id                           = string
+      principal_type                         = optional(string, null)
+      description                            = optional(string, null)
+      skip_service_principal_aad_check       = optional(bool, false)
+      condition                              = optional(string, null)
+      condition_version                      = optional(string, null)
+      delegated_managed_identity_resource_id = optional(string, null)
+    })), {})
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_location"></a> [location](#input\_location)
 
@@ -112,13 +416,34 @@ object({
 
 Default: `null`
 
-### <a name="input_prefix"></a> [prefix](#input\_prefix)
+### <a name="input_purge_protection_enabled"></a> [purge\_protection\_enabled](#input\_purge\_protection\_enabled)
 
-Description: Naming prefix for resources. Should be 3-8 characters.
+Description: This variable controls whether or not purge\_protection is enabled for the module.
 
-Type: `string`
+Type: `bool`
 
-Default: `"motteweb"`
+Default: `true`
+
+### <a name="input_resource_types"></a> [resource\_types](#input\_resource\_types)
+
+Description: Override the AzAPI `<provider>/<resource>@<api-version>` strings used by this module. Each key defaults to a tested value; supply only the keys you want to override. Useful when targeting a sovereign cloud with older API versions, or when opting into a newer preview API.
+
+- `devcenter`  - The devcenter, used by the project.
+- `project`    - The project, used by the pool.
+- `lock`       - Management lock applied to the storage account (and to private endpoints when configured).
+
+Type:
+
+```hcl
+object({
+    resourcegroup = optional(string, "Microsoft.Resources/resourceGroups@2025-04-01")
+    devcenter     = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
+    project       = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
+    lock          = optional(string, "Microsoft.Authorization/locks@2020-05-01")
+  })
+```
+
+Default: `{}`
 
 ### <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments)
 
@@ -152,6 +477,90 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_soft_delete_retention_days"></a> [soft\_delete\_retention\_days](#input\_soft\_delete\_retention\_days)
+
+Description: The number of days that items are retained before being permanently deleted. Default is 7. Set to `null` for `free` sku.
+
+Type: `number`
+
+Default: `7`
+
+### <a name="input_storageaccounts"></a> [storageaccounts](#input\_storageaccounts)
+
+Description: A map of  to create on the parent resource group. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+
+- `name` - (Required) The name of the Container which should be created within the Storage Account. Changing this forces a new resource to be created.
+- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the storage account.
+- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of the storage account.
+- `account_sku_name` (Optional) Explicit storage account SKU name (e.g. `Standard_LRS`, `Premium_ZRS`, `PremiumV2_LRS`, `StandardV2_GZRS`). When set, this value is sent to Azure verbatim and overrides the SKU derived from `account_tier`, `account_replication_type` and `provisioned_billing_model_version` - those variables are only honoured when `account_sku_name` is explicitly set to `null`. Defaults to `Standard_ZRS`. Note: the `*V2_*` SKUs (e.g. `StandardV2_ZRS`, `PremiumV2_ZRS`) require `account_kind = "FileStorage"`. Default: "Standard\_ZRS"
+- `public_network_access_enabled` (Optional) Whether the public network access is enabled? Defaults to `false`.
+- `network_rules` (Optional) Network rules restricting access to the storage account. Defaults to `{}`, which applies the object's own per-attribute defaults (effectively `default_action = "Deny"` with `bypass = ["AzureServices"]`). > Note: the default value blocks all public access to the storage account. If you want to disable all network rules, set this value to `null`. - `bypass` - (Optional) Specifies whether traffic is bypassed for Logging/Metrics/AzureServices. Valid options are any combination of `Logging`, `Metrics`, `AzureServices`, or `None`. Defaults to `["AzureServices"]`. - `default_action` - (Optional) Specifies the default action of allow or deny when no other rules match. Valid options are `Deny` or `Allow`. Defaults to `Deny`. - `ip_rules` - (Optional) List of public IP or IP ranges in CIDR format. Only IPv4 addresses are allowed. Private IP address ranges (as defined in [RFC 1918](https://tools.ietf.org/html/rfc1918#section-3)) are not allowed. Defaults to `[]`. - `virtual_network_subnet_ids` - (Optional) A set of virtual network subnet IDs to secure the storage account. Defaults to `[]`. - `private_link_access` - (Optional) A list of private link access rules. Defaults to `null`. Each entry supports: - `endpoint_resource_id` - (Required) The resource ID of the resource access rule to be granted access. - `endpoint_tenant_id` - (Optional) The tenant ID of the resource of the resource access rule to be granted access. Defaults to the current tenant ID. - `timeouts` - (Optional) Per-operation timeouts for the network rules resource. Defaults to `null` (uses provider defaults). Supports: - `create` - (Optional) Timeout for create operations. - `delete` - (Optional) Timeout for delete operations. - `read` - (Optional) Timeout for read operations. - `update` - (Optional) Timeout for update operations. Default {}
+- `role_assignments` - (Optional) A map of role assignments to create on the container. Defaults to `{}`. See `var.role_assignments` for the attribute schema.
+
+Example Input:
+```hcl
+storageaccounts = {
+  tf_state_account = {
+    name = module.naming.storage_account.name_unique
+    containers = {
+      tf_state_container = {
+        name = "tfstate"
+      }
+    }
+  }
+}
+```
+
+Type:
+
+```hcl
+map(object({
+    name                            = string
+    location                        = optional(string, null)
+    resource_group_name             = optional(string, null)
+    account_sku_name                = optional(string, "Standard_LRS")
+    shared_access_key_enabled       = optional(bool, false)
+    default_to_oauth_authentication = optional(bool, true)
+    public_network_access_enabled   = optional(bool, true)
+    network_rules = optional(object({
+      bypass                     = optional(set(string), ["AzureServices"])
+      default_action             = optional(string, "Deny")
+      ip_rules                   = optional(set(string), [])
+      virtual_network_subnet_ids = optional(set(string), [])
+      private_link_access = optional(list(object({
+        endpoint_resource_id = string
+        endpoint_tenant_id   = optional(string)
+      })))
+      timeouts = optional(object({
+        create = optional(string)
+        delete = optional(string)
+        read   = optional(string)
+        update = optional(string)
+      }))
+    }), null)
+
+    containers = optional(map(object({
+      name                       = optional(string, "tfstate")
+      container_access_type      = optional(string, "private")
+      rbac_authorization_enabled = optional(bool, true)
+
+      role_assignments = optional(map(object({
+        role_definition_id_or_name             = string
+        principal_id                           = string
+        principal_type                         = optional(string, null)
+        description                            = optional(string, null)
+        skip_service_principal_aad_check       = optional(bool, false)
+        condition                              = optional(string, null)
+        condition_version                      = optional(string, null)
+        delegated_managed_identity_resource_id = optional(string, null)
+      })), {})
+    })), {})
+
+  }))
+```
+
+Default: `{}`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: (Optional) Tags of the resource.
@@ -164,17 +573,75 @@ Default: `null`
 
 The following outputs are exported:
 
-### <a name="output_azuread_service_principal_clientID"></a> [azuread\_service\_principal\_clientID](#output\_azuread\_service\_principal\_clientID)
+### <a name="output_APP_CONFIG_ENDPOINTS"></a> [APP\_CONFIG\_ENDPOINTS](#output\_APP\_CONFIG\_ENDPOINTS)
 
-Description: n/a
+Description: A map of all created app config endpoints
 
-### <a name="output_storage_account_name"></a> [storage\_account\_name](#output\_storage\_account\_name)
+### <a name="output_BACKEND_AZURE_STORAGE_ACCOUNT_NAMES"></a> [BACKEND\_AZURE\_STORAGE\_ACCOUNT\_NAMES](#output\_BACKEND\_AZURE\_STORAGE\_ACCOUNT\_NAMES)
 
-Description: n/a
+Description: A map of all created storage account names
+
+### <a name="output_BACKEND_AZURE_STORAGE_CONTAINER_NAMES"></a> [BACKEND\_AZURE\_STORAGE\_CONTAINER\_NAMES](#output\_BACKEND\_AZURE\_STORAGE\_CONTAINER\_NAMES)
+
+Description: A map of all created storage container names
+
+### <a name="output_BACKEND_RESOURCE_GROUP_NAME"></a> [BACKEND\_RESOURCE\_GROUP\_NAME](#output\_BACKEND\_RESOURCE\_GROUP\_NAME)
+
+Description: The resource group.
+
+### <a name="output_azapi_client_config_object_id"></a> [azapi\_client\_config\_object\_id](#output\_azapi\_client\_config\_object\_id)
+
+Description: The azapi\_client\_config tenant ID
+
+### <a name="output_azuread_service_principal_client_id"></a> [azuread\_service\_principal\_client\_id](#output\_azuread\_service\_principal\_client\_id)
+
+Description: The service principal client ID
 
 ## Modules
 
-No modules.
+The following Modules are called:
+
+### <a name="module_appconfigurations"></a> [appconfigurations](#module\_appconfigurations)
+
+Source: Azure/avm-res-appconfiguration-configurationstore/azure
+
+Version: 0.5.1
+
+### <a name="module_az-environment-resourcegroup"></a> [az-environment-resourcegroup](#module\_az-environment-resourcegroup)
+
+Source: Azure/avm-res-resources-resourcegroup/azurerm
+
+Version: 0.4.0
+
+### <a name="module_centers"></a> [centers](#module\_centers)
+
+Source: ./modules/devcenter
+
+Version:
+
+### <a name="module_keyvaults"></a> [keyvaults](#module\_keyvaults)
+
+Source: Azure/avm-res-keyvault-vault/azurerm
+
+Version: 0.10.2
+
+### <a name="module_pools"></a> [pools](#module\_pools)
+
+Source: Azure/avm-res-devopsinfrastructure-pool/azurerm
+
+Version: 0.3.1
+
+### <a name="module_projects"></a> [projects](#module\_projects)
+
+Source: ./modules/project
+
+Version:
+
+### <a name="module_storageaccounts"></a> [storageaccounts](#module\_storageaccounts)
+
+Source: Azure/avm-res-storage-storageaccount/azurerm
+
+Version: 0.7.2
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
