@@ -22,6 +22,6 @@ output "BACKEND_RESOURCE_GROUP_NAME" {
   value = module.this.BACKEND_RESOURCE_GROUP_NAME
 }
 
-output "APP_CONFIG_ENDPOINT" {
-  value = module.this.APP_CONFIG_ENDPOINT
+output "APP_CONFIG_ENDPOINTS" {
+  value = module.this.APP_CONFIG_ENDPOINTS
 }
