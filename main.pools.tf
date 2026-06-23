@@ -2,9 +2,8 @@
 
 #Dev Ops Pool
 module "pools" {
-  for_each = local.pools
-
   source  = "Azure/avm-res-devopsinfrastructure-pool/azurerm"
+  for_each = local.pools
   version = "0.3.1"
 
   dev_center_project_resource_id = module.projects[each.value.project_key].resource_id

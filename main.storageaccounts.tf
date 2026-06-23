@@ -2,6 +2,7 @@
 
 module "storageaccounts" {
   source   = "Azure/avm-res-storage-storageaccount/azurerm"
+  version = "0.7.2"
   for_each = local.storageaccounts
 
   location                        = module.az-environment-resourcegroup.location

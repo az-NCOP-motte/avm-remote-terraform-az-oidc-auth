@@ -1,6 +1,6 @@
 module "keyvaults" {
   source   = "Azure/avm-res-keyvault-vault/azurerm"
-  version  = "0.10.0"
+  version  = "0.10.2"
   for_each = local.keyvaults
 
   location                      = module.az-environment-resourcegroup.location
