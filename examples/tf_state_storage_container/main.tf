@@ -1,8 +1,8 @@
 locals {
-  subscription_id = var.subscription_id
+  subscription_id     = var.subscription_id
   resource_group_name = var.resource_group_name
-  prefix = ""
-  suffix = "gitautomation"
+  prefix              = ""
+  suffix              = "git"
 }
 
 terraform {
@@ -33,14 +33,9 @@ terraform {
   #   key                  = "terraform.tfstate"
   # }
 }
-provider "azapi" {
-  skip_provider_registration = true
-}
 
 provider "azurerm" {
   features {}
-  resource_provider_registrations = "none"
-  storage_use_azuread        = true
 }
 
 # import resource group that was created in set-up
@@ -72,4 +67,14 @@ module "this" {
   devops_principle_client_id = var.devops_principle_client_id
   naming_prefix              = "motte"
   environment_name           = "def"
+  storageaccounts = {
+    tf_state_account = {
+      name = module.naming.storage_account.name_unique
+      containers = {
+        tf_state_container = {
+          name = "tfstate"
+        }
+      }
+    }
+  }
 }

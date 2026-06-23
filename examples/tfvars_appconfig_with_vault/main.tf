@@ -1,8 +1,8 @@
 locals {
-  subscription_id = var.subscription_id
+  subscription_id     = var.subscription_id
   resource_group_name = var.resource_group_name
-  prefix = ""
-  suffix = "gitautomation"
+  prefix              = ""
+  suffix              = "gitautomation"
 }
 
 terraform {
@@ -33,14 +33,9 @@ terraform {
   #   key                  = "terraform.tfstate"
   # }
 }
-provider "azapi" {
-  skip_provider_registration = true
-}
 
 provider "azurerm" {
   features {}
-  resource_provider_registrations = "none"
-  storage_use_azuread        = true
 }
 
 # import resource group that was created in set-up
@@ -72,4 +67,58 @@ module "this" {
   devops_principle_client_id = var.devops_principle_client_id
   naming_prefix              = "motte"
   environment_name           = "def"
+
+  appconfigurations = {
+    tf_tfvars = {
+      name = module.naming.app_configuration.name_unique
+      purge_protection_enabled   = false
+      soft_delete_retention_days = null
+      # vault references here
+      vault_references = {
+        key_ref_1 = {
+          name = "vault_ref1"
+          # the referance from config below
+          secret_key = "secret_1"
+        }
+      }
+    }
+  }
+
+  # the key vault config
+  keyvaults = {
+    key_vault_1 = {
+      name = module.naming.key_vault.name_unique
+      keys = {
+        secret_1 = {
+          name     = module.naming.key_vault_key.name_unique
+          key_type = "RSA"
+          key_size = 2048
+          key_opts = [
+            "decrypt",
+            "encrypt",
+            "sign",
+            "unwrapKey",
+            "verify",
+            "wrapKey"
+          ]
+          enabled = true
+        }
+      }
+
+      secrets = {
+        secret_1 = {
+          name = module.naming.key_vault_secret.name_unique
+        }
+      }
+
+      secrets_value = {
+        secret_1 = "supersecretpassword123"
+      }
+    }
+  }
+}
+
+moved {
+  from = module.test
+  to   = module.this
 }

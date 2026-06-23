@@ -24,9 +24,9 @@ variable "devops_principle_client_id" { # use terraform.tfvars for input
   description = "Service Connection Principle Client ID provided by tfvars file."
 }
 
-variable "devops_organization_url" { # use terraform.tfvars for input
+variable "devops_organization_name" {
   type        = string
-  description = "DevOps Organization URL provided by tfvars file."
+  description = "DevOps Organization name provided by tfvars file."
 }
 
 variable "location" {

@@ -10,16 +10,10 @@ variable "resource_group_name" {
   description = "Name of the resource group provided by tfvars file."
 }
 
-variable "subscription_id" {
-  type        = string
-  description = "Subscription ID of the resource group provided by tfvars file."
-}
-
-
 variable "environment_name" {
   type        = string
   description = "Name of the environment provided by tfvars file."
-  default = "todo"
+  default     = "todo"
 
   validation {
     condition     = length(var.environment_name) >= 3 && length(var.environment_name) <= 8
