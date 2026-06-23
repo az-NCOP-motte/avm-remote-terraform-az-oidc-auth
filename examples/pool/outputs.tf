@@ -10,12 +10,12 @@ output "azuread_service_principal_client_id" {
   value = module.this.azuread_service_principal_client_id
 }
 
-output "BACKEND_AZURE_STORAGE_CONTAINER_NAME" {
-  value = module.this.BACKEND_AZURE_STORAGE_CONTAINER_NAME
+output "BACKEND_AZURE_STORAGE_CONTAINER_NAMES" {
+  value = module.this.BACKEND_AZURE_STORAGE_CONTAINER_NAMES
 }
 
-output "BACKEND_AZURE_STORAGE_ACCOUNT_NAME" {
-  value = module.this.BACKEND_AZURE_STORAGE_ACCOUNT_NAME
+output "BACKEND_AZURE_STORAGE_ACCOUNT_NAMES" {
+  value = module.this.BACKEND_AZURE_STORAGE_ACCOUNT_NAMES
 }
 
 output "BACKEND_RESOURCE_GROUP_NAME" {
