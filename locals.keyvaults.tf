@@ -1,0 +1,3 @@
+locals {
+  keyvaults = var.keyvaults
+}

@@ -7,14 +7,18 @@ variable "appconfigurations" {
     public_network_access_enabled = optional(bool, true)
     sku                           = optional(string, "developer")
     purge_protection_enabled      = optional(bool, false)
-    soft_delete_retention_days    = optional(number, null) 
-    key_values = optional(map(object({ 
-      key = string 
-      value = string 
-      content_type = optional(string, null) 
-      label = optional(string, null) 
-      tags = optional(map(string), null) 
-      })), {})
+    soft_delete_retention_days    = optional(number, null)
+    vault_references = optional(map(object({
+      name       = string
+      secret_key = string
+    })), {})
+    key_values = optional(map(object({
+      key          = string
+      value        = string
+      content_type = optional(string, null)
+      label        = optional(string, null)
+      tags         = optional(map(string), null)
+    })), {})
 
     role_assignments = optional(map(object({
       role_definition_id_or_name             = string
