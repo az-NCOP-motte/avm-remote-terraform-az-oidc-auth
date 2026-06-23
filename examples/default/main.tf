@@ -1,8 +1,8 @@
 locals {
-  subscription_id = var.subscription_id
+  subscription_id     = var.subscription_id
   resource_group_name = var.resource_group_name
-  prefix = ""
-  suffix = "gitautomation"
+  prefix              = ""
+  suffix              = "gitautomation"
 }
 
 terraform {
@@ -40,7 +40,7 @@ provider "azapi" {
 provider "azurerm" {
   features {}
   resource_provider_registrations = "none"
-  storage_use_azuread        = true
+  storage_use_azuread             = true
 }
 
 # import resource group that was created in set-up

@@ -30,7 +30,7 @@ locals {
       principal_id               = local.service_principal_id
       role_definition_id_or_name = "Key Vault Secrets User"
     }
-    
+
     crypto_user = {
       principal_id               = local.service_principal_id
       role_definition_id_or_name = "Key Vault Crypto User"

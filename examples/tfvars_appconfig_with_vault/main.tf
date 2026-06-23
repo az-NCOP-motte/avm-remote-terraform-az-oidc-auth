@@ -70,7 +70,7 @@ module "this" {
 
   appconfigurations = {
     tf_tfvars = {
-      name = module.naming.app_configuration.name_unique
+      name                       = module.naming.app_configuration.name_unique
       purge_protection_enabled   = false
       soft_delete_retention_days = null
       # vault references here

@@ -1,6 +1,6 @@
 module "centers" {
-  source = "./modules/devcenter"
-  for_each      = local.devcenters
+  source   = "./modules/devcenter"
+  for_each = local.devcenters
 
   resource_type = var.resource_types.devcenter
   parent_id     = module.az-environment-resourcegroup.resource_id

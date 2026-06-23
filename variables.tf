@@ -125,9 +125,10 @@ variable "tags" {
 
 variable "resource_types" {
   type = object({
-    devcenter = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
-    project   = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
-    lock      = optional(string, "Microsoft.Authorization/locks@2020-05-01")
+    resourcegroup = optional(string, "Microsoft.Resources/resourceGroups@2025-04-01")
+    devcenter     = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
+    project       = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
+    lock          = optional(string, "Microsoft.Authorization/locks@2020-05-01")
   })
   default     = {}
   description = <<DESCRIPTION
