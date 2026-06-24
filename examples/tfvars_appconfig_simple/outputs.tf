@@ -1,7 +1,3 @@
-output "azapi_client_config_subscription_id" {
-  value = module.this.azapi_client_config_subscription_id
-}
-
 output "azapi_client_config_object_id" {
   value = module.this.azapi_client_config_object_id
 }

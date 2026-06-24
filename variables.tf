@@ -7,12 +7,12 @@ variable "location" {
 
 variable "resource_group_name" {
   type        = string
-  description = "Name of the resource group provided by tfvars file."
+  description = "Name of the resource group."
 }
 
 variable "environment_name" {
   type        = string
-  description = "Name of the environment provided by tfvars file."
+  description = "Name of the environment to manage."
   default     = "todo"
 
   validation {
@@ -21,31 +21,20 @@ variable "environment_name" {
   }
 }
 
-variable "naming_prefix" {
-  description = "Naming prefix for resources. Should be 3-8 characters."
-  type        = string
-  default     = "motteweb"
-
-  validation {
-    condition     = length(var.naming_prefix) >= 3 && length(var.naming_prefix) <= 8
-    error_message = "Naming prefix should be between 3-8 characters. Submitted value was ${length(var.naming_prefix)}."
-  }
-}
-
 variable "devops_principle_client_id" {
-  type = string
+  type        = string
+  description = "The service principal client ID."
 }
 
 variable "devops_organization_name" {
-  type = string
+  type        = string
+  description = "This variable helps connect the pool to the devops organization."
 }
 
 variable "purge_protection_enabled" {
   type        = bool
   default     = true
-  description = <<DESCRIPTION
-This variable controls whether or not purge_protection is enabled for the module.
-DESCRIPTION
+  description = "This variable controls whether or not purge_protection is enabled for the module."
   nullable    = false
 }
 
@@ -125,9 +114,10 @@ variable "tags" {
 
 variable "resource_types" {
   type = object({
-    devcenter = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
-    project   = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
-    lock      = optional(string, "Microsoft.Authorization/locks@2020-05-01")
+    resourcegroup = optional(string, "Microsoft.Resources/resourceGroups@2025-04-01")
+    devcenter     = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
+    project       = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
+    lock          = optional(string, "Microsoft.Authorization/locks@2020-05-01")
   })
   default     = {}
   description = <<DESCRIPTION

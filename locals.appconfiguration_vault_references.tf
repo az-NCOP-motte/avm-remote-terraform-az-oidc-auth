@@ -1,5 +1,5 @@
 locals {
-  appconfig_vault_refs  = merge([
+  appconfig_vault_refs = merge([
     for ac_key, ac in var.appconfigurations : (
       try(ac.vault_references, {}) != {} ?
       {

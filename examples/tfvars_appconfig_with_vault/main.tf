@@ -65,14 +65,14 @@ module "this" {
   devops_organization_name   = var.devops_organization_name
   enable_telemetry           = var.enable_telemetry
   devops_principle_client_id = var.devops_principle_client_id
-  naming_prefix              = "motte"
   environment_name           = "def"
 
   appconfigurations = {
     tf_tfvars = {
-      name = module.naming.app_configuration.name_unique
+      name                       = module.naming.app_configuration.name_unique
       purge_protection_enabled   = false
       soft_delete_retention_days = null
+      public_network_access_enabled = true
       # vault references here
       vault_references = {
         key_ref_1 = {
@@ -88,6 +88,7 @@ module "this" {
   keyvaults = {
     key_vault_1 = {
       name = module.naming.key_vault.name_unique
+      public_network_access_enabled = true
       keys = {
         secret_1 = {
           name     = module.naming.key_vault_key.name_unique

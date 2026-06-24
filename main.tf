@@ -3,14 +3,6 @@ provider "azapi" {
   # oidc_azure_service_connection_id = ""
 }
 
-# This ensures we have unique CAF compliant names for our resources.
-module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "0.4.2"
-  prefix  = [lower(var.naming_prefix)]
-  suffix  = [lower(var.environment_name)]
-}
-
 module "az-environment-resourcegroup" {
   source  = "Azure/avm-res-resources-resourcegroup/azurerm"
   version = "0.4.0"

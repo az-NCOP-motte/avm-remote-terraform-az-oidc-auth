@@ -65,7 +65,6 @@ module "this" {
   devops_organization_name   = var.devops_organization_name
   enable_telemetry           = var.enable_telemetry
   devops_principle_client_id = var.devops_principle_client_id
-  naming_prefix              = "motte"
   environment_name           = "def"
   storageaccounts = {
     tf_state_account = {

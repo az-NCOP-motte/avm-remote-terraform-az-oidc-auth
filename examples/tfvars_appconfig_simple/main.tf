@@ -65,12 +65,12 @@ module "this" {
   devops_organization_name   = var.devops_organization_name
   enable_telemetry           = var.enable_telemetry
   devops_principle_client_id = var.devops_principle_client_id
-  naming_prefix              = "motte"
   environment_name           = "def"
 
   appconfigurations = {
     tf_tfvars = {
       name = module.naming.app_configuration.name_unique
+      public_network_access_enabled = true
     }
   }
 }

@@ -2,9 +2,8 @@
 
 #Dev Ops Pool
 module "pools" {
-  for_each = local.pools
-
   source  = "Azure/avm-res-devopsinfrastructure-pool/azurerm"
+  for_each = local.pools
   version = "0.3.1"
 
   dev_center_project_resource_id = module.projects[each.value.project_key].resource_id
@@ -26,5 +25,5 @@ module "pools" {
   fabric_profile_os_disk_storage_account_type         = each.value.storage_account_type #'Standard', 'Premium' and 'StandardSSD',
   fabric_profile_sku_name                             = each.value.sku_name
   agent_profile_resource_prediction_profile_automatic = { "kind" : "Automatic", "prediction_preference" : each.value.prediction_profile_automatice }
-  fabric_profile_images = each.value.profile_images
+  fabric_profile_images                               = each.value.profile_images
 }
