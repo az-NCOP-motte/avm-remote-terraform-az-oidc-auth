@@ -6,7 +6,7 @@ variable "storageaccounts" {
     account_sku_name                = optional(string, "Standard_LRS")
     shared_access_key_enabled       = optional(bool, false)
     default_to_oauth_authentication = optional(bool, true)
-    public_network_access_enabled   = optional(bool, true)
+    public_network_access_enabled   = optional(bool, false)
     network_rules = optional(object({
       bypass                     = optional(set(string), ["AzureServices"])
       default_action             = optional(string, "Deny")
