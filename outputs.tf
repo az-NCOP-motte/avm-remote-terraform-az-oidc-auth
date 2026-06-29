@@ -1,6 +1,6 @@
 output "azapi_client_config_object_id" {
   description = "The azapi_client_config tenant ID"
-  value = data.azapi_client_config.current.tenant_id
+  value       = data.azapi_client_config.current.tenant_id
 }
 
 output "azuread_service_principal_client_id" {
@@ -28,7 +28,7 @@ output "BACKEND_AZURE_STORAGE_ACCOUNT_NAMES" {
 
 output "BACKEND_RESOURCE_GROUP_NAME" {
   description = "The resource group."
-  value = module.az-environment-resourcegroup.name
+  value       = module.az-environment-resourcegroup.name
 }
 
 output "APP_CONFIG_ENDPOINTS" {
@@ -37,4 +37,8 @@ output "APP_CONFIG_ENDPOINTS" {
     for key, sa in module.appconfigurations :
     key => sa.endpoint
   }
+}
+
+output "DEBUG" {
+  value = module.serviceconnections[var.service_connection_key]
 }
