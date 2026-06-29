@@ -3,7 +3,7 @@ locals {
   devops_project_name = var.devops_project_name
   resource_group_name = var.resource_group_name
   prefix              = ""
-  suffix              = "gitautomation"
+  suffix              = "default"
 }
 
 terraform {
@@ -19,7 +19,7 @@ terraform {
     }
     azuredevops = {
       source  = "microsoft/azuredevops"
-      version = ">=1.15.1"
+      version = ">= 1.15.1"
     }
     modtm = {
       source  = "azure/modtm"
@@ -69,16 +69,16 @@ module "this" {
 
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  resource_group_name        = var.resource_group_name
-  devops_organization_name   = var.devops_organization_name
-  enable_telemetry           = var.enable_telemetry
-  environment_name           = "def"
+  resource_group_name      = var.resource_group_name
+  devops_organization_name = var.devops_organization_name
+  enable_telemetry         = var.enable_telemetry
+  environment_name         = local.suffix
 
   serviceconnections = {
     oidc_wip = {
-      name                = "Managed Terraform Git Automation Service Connection"
+      name                = "Managed Terraform Git Automation Service Connection/${local.suffix}"
       devops_project_name = local.devops_project_name
-      application_name    = "Managed Terraform Git Automation Application"
+      application_name    = "Managed Terraform Git Automation Application (${local.suffix})"
     }
   }
   service_connection_key = "oidc_wip"
