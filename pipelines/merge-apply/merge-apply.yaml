@@ -3,7 +3,7 @@
 variables:
 - group: state-data
 - name: service-connection
-  value: 'avm-remote-terraform-az-oidc-auth' # Override Variable in Specific Pipeline to use another
+  value: 'avm-remote-terraform-az-oidc-auth/$(environment_name)' # Override Variable in Specific Pipeline to use another
 - name: provider
   value: 'azurerm'
 - name: directory
