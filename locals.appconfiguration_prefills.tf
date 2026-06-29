@@ -22,7 +22,7 @@ locals {
     }
     devops_principle_client_id = {
       key   = "devops_principle_client_id"
-      value = var.devops_principle_client_id
+      value = local.service_principal_client_id
     }
   }
 }
