@@ -1,5 +1,6 @@
 locals {
   subscription_id     = var.subscription_id
+  devops_project_name = var.devops_project_name
   resource_group_name = var.resource_group_name
   prefix              = ""
   suffix              = "gitautomation"
@@ -15,6 +16,10 @@ terraform {
     azapi = {
       source  = "Azure/azapi"
       version = "~> 2.4"
+    }
+    azuredevops = {
+      source  = "microsoft/azuredevops"
+      version = ">=1.15.1"
     }
     modtm = {
       source  = "azure/modtm"
@@ -37,16 +42,14 @@ provider "azapi" {
   skip_provider_registration = true
 }
 
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/${var.devops_organization_name}"
+}
+
 provider "azurerm" {
   features {}
   resource_provider_registrations = "none"
   storage_use_azuread             = true
-}
-
-# import resource group that was created in set-up
-import {
-  to = module.this.module.az-environment-resourcegroup.azapi_resource.this
-  id = "/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
@@ -69,6 +72,14 @@ module "this" {
   resource_group_name        = var.resource_group_name
   devops_organization_name   = var.devops_organization_name
   enable_telemetry           = var.enable_telemetry
-  devops_principle_client_id = var.devops_principle_client_id
   environment_name           = "def"
+
+  serviceconnections = {
+    oidc_wip = {
+      name                = "Managed Terraform Git Automation Service Connection"
+      devops_project_name = local.devops_project_name
+      application_name    = "Managed Terraform Git Automation Application"
+    }
+  }
+  service_connection_key = "oidc_wip"
 }
