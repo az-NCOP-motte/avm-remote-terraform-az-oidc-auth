@@ -26,9 +26,9 @@ terraform {
     }
   }
 
-  backend "azurerm" {
+  # backend "azurerm" {
 
-  } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
+  # } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
 }
 
 provider "azapi" {

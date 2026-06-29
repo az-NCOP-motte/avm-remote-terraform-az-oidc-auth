@@ -38,7 +38,3 @@ output "APP_CONFIG_ENDPOINTS" {
     key => sa.endpoint
   }
 }
-
-output "DEBUG" {
-  value = module.serviceconnections[var.service_connection_key]
-}
