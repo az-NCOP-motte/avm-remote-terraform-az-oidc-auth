@@ -6,7 +6,7 @@ module "keyvaults" {
   location                      = module.az-environment-resourcegroup.location
   name                          = each.value.name
   resource_group_name           = module.az-environment-resourcegroup.name
-  tenant_id                     = data.azapi_client_config.current.tenant_id
+  tenant_id                     = local.tenant_id
   sku_name                      = each.value.sku
   public_network_access_enabled = each.value.public_network_access_enabled
   network_acls                  = each.value.network_acls

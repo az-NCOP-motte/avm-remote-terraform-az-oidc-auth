@@ -20,9 +20,5 @@ locals {
       key   = "environment_name"
       value = var.environment_name
     }
-    devops_principle_client_id = {
-      key   = "devops_principle_client_id"
-      value = var.devops_principle_client_id
-    }
   }
 }

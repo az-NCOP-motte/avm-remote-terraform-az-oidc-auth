@@ -21,3 +21,7 @@ output "BACKEND_RESOURCE_GROUP_NAME" {
 output "APP_CONFIG_ENDPOINTS" {
   value = module.this.APP_CONFIG_ENDPOINTS
 }
+
+output "DEBUG" {
+  value = module.this.DEBUG
+}

@@ -18,7 +18,6 @@ variable "description" {
   default     = "Project"
 }
 
-
 variable "identity" {
   type        = string
   description = "(Required) Managed identity properties."
@@ -41,14 +40,7 @@ variable "dev_center_id" {
 variable "resource_type" {
   type        = string
   default     = "Microsoft.DevCenter/projects@2025-02-01"
-  description = "(Optional) Override the AzAPI `<provider>/<resource>@<api-version>` string used to manage the Dev Center. Defaults to the value tested with this module version."
-  nullable    = false
-}
-
-variable "resource_type_dev_centers" {
-  type        = string
-  default     = "Microsoft.DevCenter/devCenters@2025-02-01"
-  description = "(Optional) Override the AzAPI `<provider>/<resource>@<api-version>` string used to manage the Dev Center. Defaults to the value tested with this module version."
+  description = "(Optional) Override the AzAPI `<provider>/<resource>@<api-version>` string used to manage the resource. Defaults to the value tested with this module version."
   nullable    = false
 }
 

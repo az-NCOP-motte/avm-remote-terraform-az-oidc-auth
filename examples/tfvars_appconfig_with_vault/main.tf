@@ -1,8 +1,8 @@
 locals {
-  subscription_id     = var.subscription_id
+  devops_project_name = var.devops_project_name
   resource_group_name = var.resource_group_name
   prefix              = ""
-  suffix              = "gitautomation"
+  suffix              = "config_vault"
 }
 
 terraform {
@@ -16,6 +16,10 @@ terraform {
       source  = "Azure/azapi"
       version = "~> 2.4"
     }
+    azuredevops = {
+      source  = "microsoft/azuredevops"
+      version = ">= 1.15.1"
+    }
     modtm = {
       source  = "azure/modtm"
       version = "~> 0.3"
@@ -25,23 +29,18 @@ terraform {
   # backend "azurerm" {
 
   # } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
-
-  # backend "azurerm" {
-  #   storage_account_name = module.this.module.avm-storage-account.name
-  #   resource_group_name  = var.resource_group_name
-  #   container_name       = module.this.module.avm-storage-account.containers.tf_state.name
-  #   key                  = "terraform.tfstate"
-  # }
 }
 
 provider "azurerm" {
   features {}
 }
 
-# import resource group that was created in set-up
-import {
-  to = module.this.module.az-environment-resourcegroup.azapi_resource.this
-  id = "/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}"
+provider "azapi" {
+  skip_provider_registration = true
+}
+
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/${var.devops_organization_name}"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
@@ -61,17 +60,25 @@ module "this" {
 
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  resource_group_name        = var.resource_group_name
-  devops_organization_name   = var.devops_organization_name
-  enable_telemetry           = var.enable_telemetry
-  devops_principle_client_id = var.devops_principle_client_id
-  environment_name           = "def"
+  resource_group_name      = var.resource_group_name
+  devops_organization_name = var.devops_organization_name
+  enable_telemetry         = var.enable_telemetry
+  environment_name         = local.suffix
+
+  serviceconnections = {
+    oidc_wip = {
+      name                = "Managed Terraform Git Automation Service Connection/${local.suffix}"
+      devops_project_name = local.devops_project_name
+      application_name    = "Managed Terraform Git Automation Application (${local.suffix})"
+    }
+  }
+  service_connection_key = "oidc_wip"
 
   appconfigurations = {
     tf_tfvars = {
-      name                       = module.naming.app_configuration.name_unique
-      purge_protection_enabled   = false
-      soft_delete_retention_days = null
+      name                          = module.naming.app_configuration.name_unique
+      purge_protection_enabled      = false
+      soft_delete_retention_days    = null
       public_network_access_enabled = true
       # vault references here
       vault_references = {
@@ -87,7 +94,7 @@ module "this" {
   # the key vault config
   keyvaults = {
     key_vault_1 = {
-      name = module.naming.key_vault.name_unique
+      name                          = module.naming.key_vault.name_unique
       public_network_access_enabled = true
       keys = {
         secret_1 = {
