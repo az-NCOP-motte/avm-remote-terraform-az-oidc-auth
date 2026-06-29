@@ -21,9 +21,23 @@ variable "environment_name" {
   }
 }
 
-variable "devops_principle_client_id" {
+variable "service_connection_key" {
   type        = string
-  description = "The service principal client ID."
+  description = <<-EOT
+A reference to the service connection object and used to assign roles to a service principal. Required if serviceconnections is defined.
+
+Example Input:
+```hcl
+serviceconnections = {
+  oidc_wip = {
+    name = "Managed Terraform Git Automation Service Connection"
+    ...
+  }
+}
+service_connection_key = "oidc_wip"
+```
+EOT
+  default     = null
 }
 
 variable "devops_organization_name" {
