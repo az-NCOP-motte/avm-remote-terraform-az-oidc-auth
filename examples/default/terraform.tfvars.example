@@ -1,4 +1,3 @@
-subscription_id            = "SUBSCRIPTION_ID"
-devops_organization_name   = "ORGANIZATION_NAME"
-devops_project_name        = "PROJECT_NAME"
-resource_group_name        = "avm-pipeline-automation"
+devops_organization_name = "ORGANIZATION_NAME"
+devops_project_name      = "PROJECT_NAME"
+resource_group_name      = "avm-pipeline-automation"

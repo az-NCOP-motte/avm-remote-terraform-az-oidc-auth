@@ -1,5 +1,4 @@
 locals {
-  subscription_id     = var.subscription_id
   devops_project_name = var.devops_project_name
   resource_group_name = var.resource_group_name
   prefix              = ""
@@ -26,11 +25,24 @@ terraform {
       version = "~> 0.3"
     }
   }
+
+  # backend "azurerm" {
+
+  # } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
 }
 
 provider "azurerm" {
   features {}
 }
+
+provider "azapi" {
+  skip_provider_registration = true
+}
+
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/${var.devops_organization_name}"
+}
+
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
