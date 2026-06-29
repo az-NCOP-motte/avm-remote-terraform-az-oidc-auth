@@ -13,6 +13,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.8)
 
+- <a name="requirement_azuredevops"></a> [azuredevops](#requirement\_azuredevops) (>=1.15.1)
+
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (4.71.0, <5.0.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
@@ -25,7 +27,6 @@ The following resources are used by this module:
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
 - [azapi_client_config.current](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
 - [azapi_client_config.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
-- [azuread_service_principal.devops_sp](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) (data source)
 - [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
@@ -36,12 +37,6 @@ The following input variables are required:
 ### <a name="input_devops_organization_name"></a> [devops\_organization\_name](#input\_devops\_organization\_name)
 
 Description: This variable helps connect the pool to the devops organization.
-
-Type: `string`
-
-### <a name="input_devops_principle_client_id"></a> [devops\_principle\_client\_id](#input\_devops\_principle\_client\_id)
-
-Description: The service principal client ID.
 
 Type: `string`
 
@@ -477,6 +472,59 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_service_connection_key"></a> [service\_connection\_key](#input\_service\_connection\_key)
+
+Description: A reference to the service connection object and used to assign roles to a service principal. Required if serviceconnections is defined.
+
+Example Input:
+```hcl
+serviceconnections = {
+  oidc_wip = {
+    name = "Managed Terraform Git Automation Service Connection"
+    ...
+  }
+}
+service_connection_key = "oidc_wip"
+```
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_serviceconnections"></a> [serviceconnections](#input\_serviceconnections)
+
+Description: A map of service connections to create on the parent subscription. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+
+- `name` - (Required) The Service Endpoint Name.
+- `devops_project_name` - (Required) The Project Name.
+- `app_registration_name` - (Optional) The display name for the application.
+- `service_endpoint_authentication_scheme` (WIP) Specifies the type of Azure Resource Manager Service Endpoint. Possible values are WorkloadIdentityFederation, ManagedServiceIdentity or ServicePrincipal. Defaults to ServicePrincipal for backwards compatibility.
+
+Example Input:
+```hcl
+serviceconnections = {
+  oidc_wip = {
+    name                = "Managed Terraform Git Automation Service Connection"
+    devops_project_name = local.project_name
+    application_name    = "Managed Terraform Git Automation Application"
+  }
+}
+service_connection_key = "oidc_wip"
+```
+
+Type:
+
+```hcl
+map(object({
+    name                                   = string
+    devops_project_name                    = string
+    application_name                       = optional(string, null)
+    service_endpoint_authentication_scheme = optional(string, "ServicePrincipal")
+  }))
+```
+
+Default: `{}`
+
 ### <a name="input_soft_delete_retention_days"></a> [soft\_delete\_retention\_days](#input\_soft\_delete\_retention\_days)
 
 Description: The number of days that items are retained before being permanently deleted. Default is 7. Set to `null` for `free` sku.
@@ -521,7 +569,7 @@ map(object({
     account_sku_name                = optional(string, "Standard_LRS")
     shared_access_key_enabled       = optional(bool, false)
     default_to_oauth_authentication = optional(bool, true)
-    public_network_access_enabled   = optional(bool, true)
+    public_network_access_enabled   = optional(bool, false)
     network_rules = optional(object({
       bypass                     = optional(set(string), ["AzureServices"])
       default_action             = optional(string, "Deny")
@@ -634,6 +682,12 @@ Version: 0.3.1
 ### <a name="module_projects"></a> [projects](#module\_projects)
 
 Source: ./modules/project
+
+Version:
+
+### <a name="module_serviceconnections"></a> [serviceconnections](#module\_serviceconnections)
+
+Source: ./modules/serviceconnection
 
 Version:
 
