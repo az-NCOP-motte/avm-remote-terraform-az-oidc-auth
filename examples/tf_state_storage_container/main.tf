@@ -1,8 +1,9 @@
 locals {
   subscription_id     = var.subscription_id
+  devops_project_name = var.devops_project_name
   resource_group_name = var.resource_group_name
   prefix              = ""
-  suffix              = "git"
+  suffix              = "tfstate_storage"
 }
 
 terraform {
@@ -15,6 +16,10 @@ terraform {
     azapi = {
       source  = "Azure/azapi"
       version = "~> 2.4"
+    }
+    azuredevops = {
+      source  = "microsoft/azuredevops"
+      version = ">= 1.15.1"
     }
     modtm = {
       source  = "azure/modtm"
@@ -38,12 +43,6 @@ provider "azurerm" {
   features {}
 }
 
-# import resource group that was created in set-up
-import {
-  to = module.this.module.az-environment-resourcegroup.azapi_resource.this
-  id = "/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}"
-}
-
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
@@ -61,14 +60,14 @@ module "this" {
 
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  resource_group_name        = var.resource_group_name
-  devops_organization_name   = var.devops_organization_name
-  enable_telemetry           = var.enable_telemetry
-  devops_principle_client_id = var.devops_principle_client_id
-  environment_name           = "def"
+  resource_group_name      = var.resource_group_name
+  devops_organization_name = var.devops_organization_name
+  enable_telemetry         = var.enable_telemetry
+  environment_name         = local.suffix
   storageaccounts = {
     tf_state_account = {
       name = module.naming.storage_account.name_unique
+      public_network_access_enabled = true
       containers = {
         tf_state_container = {
           name = "tfstate"
@@ -76,4 +75,13 @@ module "this" {
       }
     }
   }
+
+  serviceconnections = {
+    oidc_wip = {
+      name                = "Managed Terraform Git Automation Service Connection/${local.suffix}"
+      devops_project_name = local.devops_project_name
+      application_name    = "Managed Terraform Git Automation Application (${local.suffix})"
+    }
+  }
+  service_connection_key = "oidc_wip"
 }
