@@ -1,4 +1,4 @@
-# avm-res-remotebackend-oidc-wip-git-flow
+# avm-res-remotebackend-oidc-wif-git-flow
 
 This module provisions all required Azure resources for Terraform remote backend and Terraform Git Flow Automation pipeline configurations
 
@@ -13,7 +13,7 @@ It provisions on Azure:
 - App Configuration (tfvars)
 - Storage container (remote backend)
 - DevOps Pool (agents)
-- Service Connection (OIDC WIP)
+- Service Connection with WorkloadIdentityFederation (OIDC)
 - Scope specific RBAC role assignments for above resources (service principal)
 
 ![Architecture](./docs/architecture-deployment-view.svg)
