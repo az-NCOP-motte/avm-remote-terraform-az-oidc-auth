@@ -79,7 +79,7 @@ variable "keyvaults" {
   }))
   default     = {}
   description = <<DESCRIPTION
-Optional. A map of key vaults to create which can be linked to an app config. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+Optional. A map of key vaults to create which can be linked to an app config. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no key vaults).
 
 - `name` - (Required) The name of the Container which should be created within the Storage Account. Changing this forces a new resource to be created.
 - `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the storage account.
