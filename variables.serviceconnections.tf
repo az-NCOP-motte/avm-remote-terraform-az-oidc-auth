@@ -7,7 +7,7 @@ variable "serviceconnections" {
   }))
   default     = {}
   description = <<-EOT
-A map of service connections to create on the parent subscription. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+A map of service connections to create on the parent subscription. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no service connections).
 
 - `name` - (Required) The Service Endpoint Name.
 - `devops_project_name` - (Required) The Project Name.

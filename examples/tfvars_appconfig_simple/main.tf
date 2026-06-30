@@ -78,6 +78,7 @@ module "this" {
     tf_tfvars = {
       name                          = module.naming.app_configuration.name_unique
       public_network_access_enabled = true
+      sku                           = "free"
     }
   }
 }

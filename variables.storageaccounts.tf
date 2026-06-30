@@ -44,7 +44,7 @@ variable "storageaccounts" {
   }))
   default     = {}
   description = <<-EOT
-A map of  to create on the parent resource group. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no dev centers).
+A map of  to create on the parent resource group. The map key is arbitrary; the value supports the following attributes. Defaults to `{}` (no storage containers).
 
 - `name` - (Required) The name of the Container which should be created within the Storage Account. Changing this forces a new resource to be created.
 - `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the storage account.

@@ -129,6 +129,7 @@ module "this" {
       purge_protection_enabled      = false
       soft_delete_retention_days    = null
       public_network_access_enabled = true
+      sku                           = "free"
       # vault references here
       vault_references = {
         key_ref_1 = {
