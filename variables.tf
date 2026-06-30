@@ -5,62 +5,60 @@ variable "location" {
   default     = "West Europe"
 }
 
-variable "name" {
-  type        = string
-  description = "The name of the this resource."
-
-  validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  }
-}
-
 variable "resource_group_name" {
   type        = string
-  description = "Name of the resource group provided by tfvars file."
+  description = "Name of the resource group."
 }
-
-variable "subscription_id" {
-  type        = string
-  description = "Subscription ID of the resource group provided by tfvars file."
-}
-
 
 variable "environment_name" {
   type        = string
-  description = "Name of the environment provided by tfvars file."
-  default = "todo"
+  description = "Name of the environment to manage."
+  default     = "todo"
 
   validation {
     condition     = length(var.environment_name) >= 3 && length(var.environment_name) <= 8
-    error_message = "Naming prefix should be between 3-8 characters. Submitted value was ${length(var.environment_name)}."
+    error_message = "Environment name should be between 3-8 characters. Submitted value was ${length(var.environment_name)}."
   }
 }
 
-variable "naming_prefix" {
-  description = "Prefix to use for naming of resources."
+variable "service_connection_key" {
   type        = string
-}
+  description = <<-EOT
+A reference to the service connection object and used to assign roles to a service principal. Required if serviceconnections is defined.
 
-variable "prefix" {
-  description = "Naming prefix for resources. Should be 3-8 characters."
-  type        = string
-  default     = "motteweb"
-
-  validation {
-    condition     = length(var.prefix) >= 3 && length(var.prefix) <= 8
-    error_message = "Naming prefix should be between 3-8 characters. Submitted value was ${length(var.prefix)}."
+Example Input:
+```hcl
+serviceconnections = {
+  oidc_wip = {
+    name = "Managed Terraform Git Automation Service Connection"
+    ...
   }
 }
-
-variable "devops_principle_client_id" {
-  type = string
+service_connection_key = "oidc_wip"
+```
+EOT
+  default     = null
 }
 
-variable "devops_organization_url" {
-  type = string
+variable "devops_organization_name" {
+  type        = string
+  description = "This variable helps connect the pool to the devops organization."
+}
+
+variable "purge_protection_enabled" {
+  type        = bool
+  default     = true
+  description = "This variable controls whether or not purge_protection is enabled for the module."
+  nullable    = false
+}
+
+variable "soft_delete_retention_days" {
+  type        = number
+  default     = 7
+  description = <<DESCRIPTION
+The number of days that items are retained before being permanently deleted. Default is 7. Set to `null` for `free` sku.
+DESCRIPTION
+  nullable    = true
 }
 
 variable "enable_telemetry" {
@@ -126,4 +124,22 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+variable "resource_types" {
+  type = object({
+    resourcegroup = optional(string, "Microsoft.Resources/resourceGroups@2025-04-01")
+    devcenter     = optional(string, "Microsoft.DevCenter/devCenters@2025-02-01")
+    project       = optional(string, "Microsoft.DevCenter/projects@2025-02-01")
+    lock          = optional(string, "Microsoft.Authorization/locks@2020-05-01")
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Override the AzAPI `<provider>/<resource>@<api-version>` strings used by this module. Each key defaults to a tested value; supply only the keys you want to override. Useful when targeting a sovereign cloud with older API versions, or when opting into a newer preview API.
+
+- `devcenter`  - The devcenter, used by the project.
+- `project`    - The project, used by the pool.
+- `lock`       - Management lock applied to the storage account (and to private endpoints when configured).
+DESCRIPTION
+  nullable    = false
 }

@@ -1,0 +1,143 @@
+# Merge Pull Request Apply pipeline
+# Once Pull request is Merged, Starts with Follow-up Comment on PR Pipeline then applies Terraform Plan.
+variables:
+- group: state-data
+- name: service-connection
+  value: 'avm-remote-terraform-az-oidc-auth/$(environment_name)' # Override Variable in Specific Pipeline to use another
+- name: provider
+  value: 'azurerm'
+- name: directory
+  value: 'terraform/environments/$(environment_name)' # environment_name variable is defined in pipeline
+- name: plan-artifact-name
+  value: 'PlanFile'
+- name: plan-artifact-publish-location
+  value: 'pipeline'
+- name: pr-plan-pipeline-definition
+  value: 1
+- name: deploy-tf-file
+  value: 'deploy.tfplan'
+- name: details-text-file
+  value: 'pipeline-details.txt'
+- name: comment-json-file
+  value: 'pipeline-follow-up-comment.json'
+
+trigger:
+  branches:
+    include:
+    - master # Override trigger from Pipeline settings
+
+pool:
+  name: '$(environment_name)-motte-pipeline' #configure pool.
+  demands:
+    - ImageOverride -equals az-pipeline
+
+stages:
+- stage: Apply
+  displayName: Apply Terraform Plan from pipeline artefact
+  jobs:
+  - job: Comment
+    steps:
+
+    - task: AzureCLI@2
+      displayName: "Export PR id from pr-plan pipeline into pipeline variable OriginalPullRequestId"
+      inputs:
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: $(directory)
+        azureSubscription: $(service-connection)
+        inlineScript: |
+          set -euo pipefail
+
+          echo "🔎 Getting PR data from commit using az devops invoke..."
+
+          COMMIT_SHA="$(Build.SourceVersion)"
+          REPO_ID="$(Build.Repository.ID)"
+          PROJECT="$(System.TeamProject)"
+          ORG_URL="$(System.CollectionUri)"
+
+          echo "Commit SHA: $COMMIT_SHA"
+
+          # Configure az devops defaults
+          az devops configure --defaults \
+            organization="$ORG_URL" \
+            project="$PROJECT" \
+            --use-git-aliases false
+
+          # Invoke Pull Request Query API
+          RESPONSE=$(az devops invoke \
+            --area git \
+            --resource pullrequestquery \
+            --route-parameters repositoryId="$REPO_ID" \
+            --api-version 7.1 \
+            --http-method POST \
+            --in-file <(cat <<EOF
+          {
+            "queries": [
+              {
+                "type": "lastMergeCommit",
+                "items": ["$COMMIT_SHA"]
+              }
+            ]
+          }
+          EOF
+          ))
+
+          # echo "$RESPONSE" | jq '.results[] | keys[0]' # get first object key
+
+          echo "Response result find codeReviewId."
+          PR_ID=$(echo "$RESPONSE" | jq '.. .codeReviewId? // empty')
+
+          if [[ -z "$PR_ID" ]]; then
+            echo "⚠️ No completed PR found for this commit."
+            exit 0
+          fi
+
+          echo "✅ PR resolved:"
+          echo "  ID:    $PR_ID"
+
+          # Export as pipeline variables
+          echo "##vso[task.setvariable variable=OriginalPullRequestId]$PR_ID"
+    
+    - template: build-apply-comment-as-file.yml
+      parameters:
+        inputFile: "$(Build.SourcesDirectory)/$(directory)/$(details-text-file)"
+        outputFile: "$(Build.SourcesDirectory)/$(directory)/$(comment-json-file)"
+        buildId: "$(Build.BuildId)"
+
+    - template: ../steps/az-cli-post-pr-comment.yml
+      parameters:
+        PR_ID: $(OriginalPullRequestId)
+        comment_json_file: $(comment-json-file)
+
+  - job: Apply
+    steps:
+      
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Plan file artifact
+      inputs:
+        source: 'specific'
+        project: $(System.TeamProjectId)
+        definition:  $(pr-plan-pipeline-definition)
+        artifact: $(plan-artifact-name)
+        buildVersionToDownload: latest
+        targetPath: $(Build.SourcesDirectory)/$(directory)
+
+    - template: ../steps/git-config-pat.yml
+      
+    - template: ../steps/terraform-init.yml
+
+    - task: TerraformTaskV4@4
+      displayName: Terraform Apply
+      inputs:
+        provider: $(provider)
+        command: 'apply'
+        workingDirectory: $(directory)
+        commandOptions: '$(Build.SourcesDirectory)/$(directory)/$(deploy-tf-file)'
+        environmentServiceNameAzureRM: $(service-connection)
+      env:
+        ARM_USE_AZUREAD: true
+        ARM_USE_OIDC: true
+        TF_INPUT: 0
+        TF_LOG: DEBUG
+        
+    - template: ../steps/git-config-reset.yml

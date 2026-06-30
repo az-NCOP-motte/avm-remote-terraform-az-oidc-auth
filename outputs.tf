@@ -1,27 +1,40 @@
-output "azurerm_client_config_object_id" {
-  value = data.azurerm_client_config.current.object_id
+output "azapi_client_config_object_id" {
+  description = "The azapi_client_config tenant ID"
+  value       = data.azapi_client_config.current.tenant_id
 }
 
-output "azurerm_client_config_subscription_id" {
-  value = data.azurerm_client_config.current.subscription_id
+output "azuread_service_principal_client_id" {
+  description = "The service principal client ID"
+  value       = local.service_principal_client_id
 }
 
-output "azuread_service_principal_clientID" {
-  value = var.devops_principle_client_id
+output "BACKEND_AZURE_STORAGE_CONTAINER_NAMES" {
+  description = "A map of all created storage container names"
+  value = merge([
+    for sa_key, sa in module.storageaccounts : {
+      for container_key, container in sa.containers :
+      "${container_key}" => container.name
+    }
+  ]...)
 }
 
-output "BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME" {
-  value = azurerm_storage_container.tf_state.name
-}
-
-output "BACKEND_AZURE_STORAGE_ACCOUNT_NAME" {
-  value = azurerm_storage_account.tf_state.name
+output "BACKEND_AZURE_STORAGE_ACCOUNT_NAMES" {
+  description = "A map of all created storage account names"
+  value = {
+    for key, sa in module.storageaccounts :
+    key => sa.name
+  }
 }
 
 output "BACKEND_RESOURCE_GROUP_NAME" {
-  value = azurerm_resource_group.TODO.name
+  description = "The resource group."
+  value       = module.az-environment-resourcegroup.name
 }
 
-output "APP_CONFIG_ENDPOINT" {
-  value = azurerm_app_configuration.TODO.endpoint
+output "APP_CONFIG_ENDPOINTS" {
+  description = "A map of all created app config endpoints"
+  value = {
+    for key, sa in module.appconfigurations :
+    key => sa.endpoint
+  }
 }

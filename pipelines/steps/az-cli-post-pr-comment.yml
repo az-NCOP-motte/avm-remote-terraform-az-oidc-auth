@@ -1,0 +1,33 @@
+parameters:
+  PR_ID: ""
+  comment_json_file: ""
+
+steps:
+  - task: AzureCLI@2
+    displayName: "Post PR comment from comment file"
+    inputs:
+      scriptType: bash
+      scriptLocation: inlineScript
+      workingDirectory: $(directory)
+      azureSubscription: $(service-connection)
+      inlineScript: |
+        echo "Posting PR comment..."
+        echo "definitionId: "$(System.DefinitionId)
+        echo "buildId : "$(Build.BuildId)
+
+        # Post the comment
+        az devops invoke \
+          --area git \
+          --resource pullRequestThreads \
+          --org $(System.TeamFoundationCollectionUri) \
+          --route-parameters \
+              project=$(System.TeamProject) \
+              repositoryId=$(Build.Repository.ID) \
+              pullRequestId=$PR_ID \
+          --http-method POST \
+          --api-version 7.0 \
+          --in-file $comment_json_file
+
+    env:
+      PR_ID: ${{ parameters.PR_ID }}
+      comment_json_file: ${{ parameters.comment_json_file }}

@@ -1,0 +1,3 @@
+locals {
+  serviceconnections = var.serviceconnections
+}

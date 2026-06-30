@@ -1,3 +1,10 @@
+locals {
+  devops_project_name = var.devops_project_name
+  resource_group_name = var.resource_group_name
+  prefix              = ""
+  suffix              = "default"
+}
+
 terraform {
   required_version = ">=1.3.7"
   required_providers {
@@ -5,47 +12,67 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~>4.71.0"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.4"
+    }
+    azuredevops = {
+      source  = "microsoft/azuredevops"
+      version = ">= 1.15.1"
+    }
     modtm = {
       source  = "azure/modtm"
       version = "~> 0.3"
     }
   }
+
+  # backend "azurerm" {
+
+  # } # partial: terraform init -backend-config="backend-config.tfbackend" comment this out when migrating state
+}
+
+provider "azapi" {
+  skip_provider_registration = true
+}
+
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/${var.devops_organization_name}"
 }
 
 provider "azurerm" {
-  features {
-
-  }
-  skip_provider_registration = true
-  storage_use_azuread        = true
-}
-
-# import resource group that was created in set-up   # todo: consider using data.azurerm_client_config.current.subscription_id
-import {
-  to = module.test.azurerm_resource_group.TODO
-  id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
+  features {}
+  resource_provider_registrations = "none"
+  storage_use_azuread             = true
 }
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "0.4.2"
+  prefix  = [local.prefix]
+  suffix  = [local.suffix]
 }
 
 # This is the module call
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
 # with a data source.
-module "test" {
+module "this" {
   source = "../../"
 
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  name                       = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
-  resource_group_name        = var.resource_group_name
-  subscription_id            = var.subscription_id # todo: consider using data.azurerm_client_config.current.subscription_id
-  devops_organization_url    = var.devops_organization_url
-  enable_telemetry           = var.enable_telemetry
-  devops_principle_client_id = var.devops_principle_client_id
-  naming_prefix              = "todo"
+  resource_group_name      = var.resource_group_name
+  devops_organization_name = var.devops_organization_name
+  enable_telemetry         = var.enable_telemetry
+  environment_name         = local.suffix
+
+  serviceconnections = {
+    oidc_wip = {
+      name                = "Managed Terraform Git Automation Service Connection/${local.suffix}"
+      devops_project_name = local.devops_project_name
+      application_name    = "Managed Terraform Git Automation Application (${local.suffix})"
+    }
+  }
+  service_connection_key = "oidc_wip"
 }
