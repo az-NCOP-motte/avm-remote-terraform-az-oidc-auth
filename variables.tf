@@ -5,6 +5,12 @@ variable "location" {
   default     = "West Europe"
 }
 
+variable "devops_project_id" {
+  type        = string
+  description = "ID of the Azure DevOps project."
+  default     = null
+}
+
 variable "resource_group_name" {
   type        = string
   description = "Name of the resource group."
