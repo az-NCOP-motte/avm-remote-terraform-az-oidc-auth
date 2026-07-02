@@ -2,7 +2,7 @@ locals {
   devops_project_name = var.devops_project_name
   resource_group_name = var.resource_group_name
   prefix              = ""
-  suffix              = "config_simple"
+  suffix              = "simplecn"
 }
 
 terraform {
@@ -51,6 +51,10 @@ module "naming" {
   suffix  = [local.suffix]
 }
 
+data "azuredevops_project" "this" {
+  name = local.devops_project_name
+}
+
 # This is the module call
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
@@ -64,11 +68,11 @@ module "this" {
   devops_organization_name = var.devops_organization_name
   enable_telemetry         = var.enable_telemetry
   environment_name         = local.suffix
+  devops_project_id        = data.azuredevops_project.this.id
 
   serviceconnections = {
     oidc_wip = {
       name                = "Managed Terraform Git Automation Service Connection/${local.suffix}"
-      devops_project_name = local.devops_project_name
       application_name    = "Managed Terraform Git Automation Application (${local.suffix})"
     }
   }
