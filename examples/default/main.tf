@@ -80,12 +80,4 @@ module "this" {
   }
   service_connection_key = "oidc_wip"
 
-  # variablegroups = {
-  #   environment_dev_state = {
-  #     name = "$(environment_name)-state-data"
-  #   }
-  #   environment_dev_config = {
-  #     name = "(environment_name)-config-data"
-  #   }
-  # }
 }
