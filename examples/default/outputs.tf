@@ -10,6 +10,11 @@ output "BACKEND_AZURE_STORAGE_CONTAINER_NAMES" {
   value = module.this.BACKEND_AZURE_STORAGE_CONTAINER_NAMES
 }
 
+output "devops_project_id" {
+  description = "The service principal client ID"
+  value       = module.this.devops_project_id
+}
+
 output "BACKEND_AZURE_STORAGE_ACCOUNT_NAMES" {
   value = module.this.BACKEND_AZURE_STORAGE_ACCOUNT_NAMES
 }
@@ -20,8 +25,4 @@ output "BACKEND_RESOURCE_GROUP_NAME" {
 
 output "APP_CONFIG_ENDPOINTS" {
   value = module.this.APP_CONFIG_ENDPOINTS
-}
-
-output "DEBUG" {
-  value = module.this.DEBUG
 }

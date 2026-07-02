@@ -8,6 +8,11 @@ output "azuread_service_principal_client_id" {
   value       = local.service_principal_client_id
 }
 
+output "devops_project_id" {
+  description = "The service principal client ID"
+  value       = var.devops_project_id
+}
+
 output "BACKEND_AZURE_STORAGE_CONTAINER_NAMES" {
   description = "A map of all created storage container names"
   value = merge([

@@ -1,4 +1,4 @@
-resource_group_name = "RESOURCE_GROUP_NAME"
-environment_name = "ENVIRONMENT_NAME"
-devops_principle_client_id = ""
-devops_organization_name = ""
+resource_group_name      = "RESOURCE_GROUP_NAME"
+environment_name         = "ENVIRONMENT_NAME"
+devops_organization_name = "DEVOPS_ORGANIZATION_NAME"
+devops_project_id        = "DEVOPS_PROJECT_ID"

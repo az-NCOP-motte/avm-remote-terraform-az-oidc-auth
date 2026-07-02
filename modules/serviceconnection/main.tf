@@ -1,7 +1,3 @@
-data "azuredevops_project" "this" {
-  name = var.devops_project_name
-}
-
 resource "azuread_application" "this" {
   display_name = var.application_name
 }
@@ -11,7 +7,7 @@ resource "azuread_service_principal" "this" {
 }
 
 resource "azuredevops_serviceendpoint_azurerm" "this" {
-  project_id                             = data.azuredevops_project.this.id
+  project_id                             = var.devops_project_id
   service_endpoint_name                  = var.name
   service_endpoint_authentication_scheme = "WorkloadIdentityFederation"
   credentials {

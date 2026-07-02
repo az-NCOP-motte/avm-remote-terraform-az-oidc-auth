@@ -16,6 +16,10 @@ locals {
       key   = "devops_organization_name"
       value = var.devops_organization_name
     }
+    devops_project_id = {
+      key   = "devops_project_id"
+      value = var.devops_project_id
+    }
     environment_name = {
       key   = "environment_name"
       value = var.environment_name

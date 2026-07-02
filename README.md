@@ -246,6 +246,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_devops_project_id"></a> [devops\_project\_id](#input\_devops\_project\_id)
+
+Description: ID of the Azure DevOps project.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
@@ -533,7 +541,6 @@ Type:
 ```hcl
 map(object({
     name                                   = string
-    devops_project_name                    = string
     application_name                       = optional(string, null)
     service_endpoint_authentication_scheme = optional(string, "ServicePrincipal")
   }))
@@ -661,6 +668,10 @@ Description: The azapi\_client\_config tenant ID
 
 Description: The service principal client ID
 
+### <a name="output_devops_project_id"></a> [devops\_project\_id](#output\_devops\_project\_id)
+
+Description: The service principal client ID
+
 ## Modules
 
 The following Modules are called:
@@ -680,6 +691,12 @@ Version: 0.4.0
 ### <a name="module_centers"></a> [centers](#module\_centers)
 
 Source: ./modules/devcenter
+
+Version:
+
+### <a name="module_config_data_azuredevops_variable_groups"></a> [config\_data\_azuredevops\_variable\_groups](#module\_config\_data\_azuredevops\_variable\_groups)
+
+Source: ./modules/variablegroup
 
 Version:
 
@@ -704,6 +721,12 @@ Version:
 ### <a name="module_serviceconnections"></a> [serviceconnections](#module\_serviceconnections)
 
 Source: ./modules/serviceconnection
+
+Version:
+
+### <a name="module_state_data_azuredevops_variable_groups"></a> [state\_data\_azuredevops\_variable\_groups](#module\_state\_data\_azuredevops\_variable\_groups)
+
+Source: ./modules/variablegroup
 
 Version:
 

@@ -1,7 +1,6 @@
 variable "serviceconnections" {
   type = map(object({
     name                                   = string
-    devops_project_name                    = string
     application_name                       = optional(string, null)
     service_endpoint_authentication_scheme = optional(string, "ServicePrincipal")
   }))
