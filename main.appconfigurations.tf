@@ -23,3 +23,20 @@ module "appconfigurations" {
     rbac_app_configuration_data_owner = local.role_assignments.app_config_data_owner
   }
 }
+
+module "config_data_azuredevops_variable_groups" {
+  source   = "./modules/variablegroup"
+  for_each = local.appconfigurations
+
+  name              = "${var.environment_name}-config-data"
+  description       = "This contains the values for where we want to retrieve our configuration data from, which is the Azure AppConfig endpoint."
+  allow_access      = true
+  devops_project_id = var.devops_project_id
+
+  variable_blocks = [
+    {
+      name  = "app-config-endpoint"
+      value = module.appconfigurations[each.key].endpoint
+    }
+  ]
+}

@@ -6,6 +6,11 @@ output "azuread_service_principal_client_id" {
   value = module.this.azuread_service_principal_client_id
 }
 
+output "devops_project_id" {
+  description = "The service principal client ID"
+  value       = module.this.devops_project_id
+}
+
 output "BACKEND_AZURE_STORAGE_CONTAINER_NAMES" {
   value = module.this.BACKEND_AZURE_STORAGE_CONTAINER_NAMES
 }

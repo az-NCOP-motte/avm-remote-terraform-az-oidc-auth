@@ -19,8 +19,8 @@ variable "tenant_id" {
   description = "The Azure AD tenant ID associated with the service principal."
 }
 
-variable "devops_project_name" {
+variable "devops_project_id" {
   type        = string
-  description = "(Required) The name of the DevOps project."
-
+  description = "(Required) The ID of the DevOps project."
+  nullable    = false
 }
