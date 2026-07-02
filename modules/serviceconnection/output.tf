@@ -20,10 +20,5 @@ output "service_principal_object_id" {
 
 output "project_id" {
   description = "The ID of the DevOps project."
-  value       = data.azuredevops_project.this.id
-}
-
-output "project_name" {
-  description = "The name of the DevOps project."
-  value       = data.azuredevops_project.this.name
+  value       = var.devops_project_id
 }
