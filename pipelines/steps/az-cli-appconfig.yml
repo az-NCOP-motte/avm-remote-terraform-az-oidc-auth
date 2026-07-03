@@ -1,0 +1,23 @@
+parameters:
+  path: ""
+  endpoint: ""
+
+steps:
+  - task: AzureCLI@2
+    displayName: Extract App Config as File
+    inputs:
+      azureSubscription: $(service-connection)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      workingDirectory: $(directory)
+      inlineScript: |
+        echo "URL: "${{ parameters.endpoint }}
+        az appconfig kv export \
+        --auth-mode login \
+        --endpoint ${{ parameters.endpoint }} \
+        --destination file \
+        --format json \
+        --path "${{ parameters.path }}" \
+        --resolve-keyvault true \
+        --yes
+        cat ${{ parameters.path }}

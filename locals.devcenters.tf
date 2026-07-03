@@ -1,0 +1,3 @@
+locals {
+  devcenters = var.devcenters
+}

@@ -1,0 +1,26 @@
+steps:
+
+  - task: TerraformInstaller@0
+    displayName: Install Terraform
+    inputs:
+      terraformVersion: 'latest'
+      workingDirectory: $(directory)
+
+  - task: TerraformTaskV4@4
+    displayName: Terraform Init
+    inputs:
+      provider: $(provider)
+      command: 'init'
+      commandOptions: '-upgrade'
+      workingDirectory: $(directory)
+      backendServiceArm: $(service-connection)
+      backendAzureRmResourceGroupName: $(BACKEND_RESOURCE_GROUP_NAME)
+      backendAzureRmStorageAccountName: $(BACKEND_AZURE_STORAGE_ACCOUNT_NAME)
+      backendAzureRmContainerName: $(BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME)
+      backendAzureRmKey: $(BACKEND_AZURE_STORAGE_ACCOUNT_KEY_NAME)
+    env:
+      ARM_USE_AZUREAD: true
+      ARM_USE_OIDC: true
+      TF_IN_AUTOMATION: true
+      TF_INPUT: 0
+      TF_LOG: DEBUG

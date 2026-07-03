@@ -8,8 +8,3 @@
 
 > **Note:** Examples must be deployable and idempotent. Ensure that no input variables are required to run the example and that random values are used to ensure unique resource names. E.g. use the [naming module](https://registry.terraform.io/modules/Azure/naming/azurerm/latest) to generate a unique name for a resource.
 
-
-TODO:
-- New project: First setup without existing DevOps
-- Existing project: use variables for import
-

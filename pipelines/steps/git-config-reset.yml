@@ -1,0 +1,6 @@
+steps:
+  - script: |
+      git config --global --get-all http.https://dev.azure.com/.extraheader
+      git config --global --unset-all http.https://dev.azure.com/.extraheader
+
+    displayName: 'Unset extra git authentication header'
