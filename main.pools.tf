@@ -20,6 +20,7 @@ module "pools" {
     rbac_contributor = {
       role_definition_id_or_name = "Contributor"
       principal_id               = data.azapi_client_config.current.object_id
+      principal_type             = "ServicePrincipal"
     }
   }
   fabric_profile_os_disk_storage_account_type         = each.value.storage_account_type #'Standard', 'Premium' and 'StandardSSD',
