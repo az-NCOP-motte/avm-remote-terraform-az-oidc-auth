@@ -6,7 +6,6 @@ resource "azapi_resource" "this" {
   body = {
     properties = {
       devCenterId        = var.dev_center_id
-      displayName        = var.name
       maxDevBoxesPerUser = 0
     }
   }
