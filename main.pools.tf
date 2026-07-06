@@ -17,11 +17,7 @@ module "pools" {
   agent_profile_kind = "Stateless"
   enable_telemetry   = var.enable_telemetry
   role_assignments = {
-    rbac_contributor = {
-      role_definition_id_or_name = "Contributor"
-      principal_id               = data.azapi_client_config.current.object_id
-      principal_type             = "ServicePrincipal"
-    }
+    rbac_contributor = local.role_assignments.global_contributor
   }
   fabric_profile_os_disk_storage_account_type         = each.value.storage_account_type #'Standard', 'Premium' and 'StandardSSD',
   fabric_profile_sku_name                             = each.value.sku_name
