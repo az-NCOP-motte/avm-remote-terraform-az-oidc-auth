@@ -10,12 +10,12 @@ module "pools" {
   location                       = module.az-environment-resourcegroup.location
   name                           = each.value.name
   resource_group_name            = module.az-environment-resourcegroup.name
+  enable_telemetry               = each.value.enable_telemetry
   maximum_concurrency            = each.value.maximum_concurrency
   organization_profile = {
     organizations = [{ name = var.devops_organization_name }]
   }
   agent_profile_kind = "Stateless"
-  enable_telemetry   = var.enable_telemetry
   role_assignments = {
     rbac_contributor = local.role_assignments.global_contributor
   }
