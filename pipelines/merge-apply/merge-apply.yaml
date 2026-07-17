@@ -36,6 +36,7 @@ stages:
   displayName: Apply Terraform Plan from pipeline artefact
   jobs:
   - job: Comment
+    dependsOn: Apply
     steps:
 
     - task: AzureCLI@2
