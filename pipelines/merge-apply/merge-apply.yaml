@@ -24,7 +24,7 @@ variables:
 trigger:
   branches:
     include:
-    - master # Override trigger from Pipeline settings
+    - main # Override trigger from Pipeline settings
 
 pool:
   name: '$(environment_name)-motte-pipeline' #configure pool.
