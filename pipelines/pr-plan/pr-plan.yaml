@@ -2,10 +2,8 @@
 # Start with a app config from Azure then Creates a Terraform Plan through a Service Connection, to post as PR Comment.
 
 variables:
-- group: '$(environment_name)-state-data'
-- group: '$(environment_name)-config-data'
-- name: service-connection
-  value: 'avm-remote-terraform-az-oidc-auth/$(environment_name)' # Override Variable in Specific Pipeline to use another
+- group: config-data
+- group: state-data
 - name: provider
   value: 'azurerm'
 - name: directory
@@ -41,12 +39,14 @@ stages:
   - job: Generate
     steps:
 
+    - template: ../steps/config-data-dynamic-vars.yml
+    - template: ../steps/state-data-dynamic-vars.yml
     - template: ../steps/git-config-pat.yml
 
     - template: ../steps/az-cli-appconfig.yml
       parameters:
         path: $(tfvars-auto-file)
-        endpoint: $(app-config-endpoint)
+        endpoint: $(APP_CONFIG_ENDPOINT)
 
     - template: ../steps/terraform-init.yml
 
