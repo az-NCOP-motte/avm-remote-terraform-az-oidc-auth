@@ -23,4 +23,4 @@ steps:
       ARM_USE_OIDC: true
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-      TF_LOG: DEBUG
+      TF_LOG: $(log-level)

@@ -20,6 +20,8 @@ variables:
   value: 'plan.txt'
 - name: comment-json-file
   value: 'terraform-plan-comment.json'
+- name: log-level
+  value: DEBUG
 
 trigger:
   branches:
@@ -63,7 +65,7 @@ stages:
         ARM_USE_OIDC: true
         TF_IN_AUTOMATION: true
         TF_INPUT: 0
-        TF_LOG: DEBUG
+        TF_LOG: $(log-level)
 
     - task: PublishPipelineArtifact@1
       displayName: Publish Plan File as an artifact

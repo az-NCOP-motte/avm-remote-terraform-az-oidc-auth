@@ -21,6 +21,8 @@ variables:
   value: 'pipeline-details.txt'
 - name: comment-json-file
   value: 'pipeline-follow-up-comment.json'
+- name: log-level
+  value: DEBUG
 
 trigger:
   branches:
@@ -71,7 +73,7 @@ stages:
         ARM_USE_OIDC: true
         TF_IN_AUTOMATION: true
         TF_INPUT: 0
-        TF_LOG: DEBUG
+        TF_LOG: $(log-level)
 
     - template: build-apply-comment-as-file.yml
       parameters:
@@ -121,6 +123,6 @@ stages:
         ARM_USE_AZUREAD: true
         ARM_USE_OIDC: true
         TF_INPUT: 0
-        TF_LOG: DEBUG
+        TF_LOG: $(log-level)
        
     - template: ../steps/git-config-reset.yml
