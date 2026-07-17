@@ -13,7 +13,7 @@ variables:
 - name: plan-artifact-publish-location
   value: 'pipeline'
 - name: pr-plan-pipeline-definition
-  value: 1
+  value: $(pr_plan_definition)
 - name: deploy-tf-file
   value: 'deploy.tfplan'
 - name: details-text-file
