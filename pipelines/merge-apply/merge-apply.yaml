@@ -2,8 +2,6 @@
 # Once Pull request is Merged, Starts with Follow-up Comment on PR Pipeline then applies Terraform Plan.
 variables:
 - group: state-data
-- name: service-connection
-  value: 'avm-remote-terraform-az-oidc-auth/$(environment_name)' # Override Variable in Specific Pipeline to use another
 - name: provider
   value: 'azurerm'
 - name: directory
