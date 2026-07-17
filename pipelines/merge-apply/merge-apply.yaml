@@ -1,11 +1,14 @@
 # Merge Pull Request Apply pipeline
 # Once Pull request is Merged, Starts with Follow-up Comment on PR Pipeline then applies Terraform Plan.
 variables:
+- group: config-data
 - group: state-data
 - name: provider
   value: 'azurerm'
 - name: directory
   value: 'terraform/environments/$(environment_name)' # environment_name variable is defined in pipeline
+- name: tfvars-auto-file
+  value : 'terraform.auto.tfvars.json' 
 - name: plan-artifact-name
   value: 'PlanFile'
 - name: plan-artifact-publish-location
@@ -39,7 +42,16 @@ stages:
 
     - template: export-pr-id.yml
 
+    - template: ../steps/config-data-dynamic-vars.yml
+    - template: ../steps/state-data-dynamic-vars.yml
+    - template: ../steps/git-config-pat.yml
+    
+    - template: ../steps/az-cli-appconfig.yml
+      parameters:
+        path: $(tfvars-auto-file)
+        endpoint: $(APP_CONFIG_ENDPOINT)
 
+    - template: ../steps/terraform-init.yml
 
 
     - template: build-apply-comment-as-file.yml
