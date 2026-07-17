@@ -53,6 +53,24 @@ stages:
 
     - template: ../steps/terraform-init.yml
 
+    - task: TerraformTaskV4@4
+      displayName: Extract Terraform Outputs to Text
+      inputs:
+        provider: $(provider)
+        command: 'custom'
+        customCommand: 'output'
+        commandOptions: -json=false
+        workingDirectory: $(directory)
+        environmentServiceNameAzureRM: $(service-connection)
+        outputTo: 'file'
+        fileName: '$(directory)/$(details-text-file)'
+        outputFormat: 'default'
+      env:
+        ARM_USE_AZUREAD: true
+        ARM_USE_OIDC: true
+        TF_IN_AUTOMATION: true
+        TF_INPUT: 0
+        TF_LOG: DEBUG
 
     - template: build-apply-comment-as-file.yml
       parameters:
