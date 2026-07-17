@@ -82,23 +82,6 @@ stages:
         inputFile: "$(directory)/$(plan-text-file)"
         outputFile: "$(directory)/$(comment-json-file)"
 
-  #   - task: PublishPipelineArtifact@1
-  #     displayName: Publish Comment File as an artifact
-  #     inputs:
-  #       targetPath: '$(directory)/$(comment-json-file)'
-  #       artifactName: 'CommentJSON'
-  #       publishLocation: $(plan-artifact-publish-location)
-      
-  # - job: Post
-  #   dependsOn: Generate
-  #   steps:
-
-  #   - task: DownloadPipelineArtifact@2
-  #     displayName: Download Comment file
-  #     inputs:
-  #       artifact: 'CommentJSON'
-  #       targetPath: $(directory)
-      
     - template: ../steps/az-cli-post-pr-comment.yml
       parameters:
         PR_ID: $(System.PullRequest.PullRequestId)
