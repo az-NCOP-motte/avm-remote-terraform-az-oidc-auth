@@ -39,66 +39,11 @@ stages:
     dependsOn: Apply
     steps:
 
-    - task: AzureCLI@2
-      displayName: "Export PR id from pr-plan pipeline into pipeline variable OriginalPullRequestId"
-      inputs:
-        scriptType: bash
-        scriptLocation: inlineScript
-        workingDirectory: $(directory)
-        azureSubscription: $(service-connection)
-        inlineScript: |
-          set -euo pipefail
+    - template: export-pr-id.yml
 
-          echo "🔎 Getting PR data from commit using az devops invoke..."
 
-          COMMIT_SHA="$(Build.SourceVersion)"
-          REPO_ID="$(Build.Repository.ID)"
-          PROJECT="$(System.TeamProject)"
-          ORG_URL="$(System.CollectionUri)"
 
-          echo "Commit SHA: $COMMIT_SHA"
 
-          # Configure az devops defaults
-          az devops configure --defaults \
-            organization="$ORG_URL" \
-            project="$PROJECT" \
-            --use-git-aliases false
-
-          # Invoke Pull Request Query API
-          RESPONSE=$(az devops invoke \
-            --area git \
-            --resource pullrequestquery \
-            --route-parameters repositoryId="$REPO_ID" \
-            --api-version 7.1 \
-            --http-method POST \
-            --in-file <(cat <<EOF
-          {
-            "queries": [
-              {
-                "type": "lastMergeCommit",
-                "items": ["$COMMIT_SHA"]
-              }
-            ]
-          }
-          EOF
-          ))
-
-          # echo "$RESPONSE" | jq '.results[] | keys[0]' # get first object key
-
-          echo "Response result find codeReviewId."
-          PR_ID=$(echo "$RESPONSE" | jq '.. .codeReviewId? // empty')
-
-          if [[ -z "$PR_ID" ]]; then
-            echo "⚠️ No completed PR found for this commit."
-            exit 0
-          fi
-
-          echo "✅ PR resolved:"
-          echo "  ID:    $PR_ID"
-
-          # Export as pipeline variables
-          echo "##vso[task.setvariable variable=OriginalPullRequestId]$PR_ID"
-    
     - template: build-apply-comment-as-file.yml
       parameters:
         inputFile: "$(Build.SourcesDirectory)/$(directory)/$(details-text-file)"
