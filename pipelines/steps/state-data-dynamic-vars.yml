@@ -1,0 +1,62 @@
+# state-data-dynamic-vars.yml
+steps:
+- bash: |
+    echo "=== START DEBUG: STATE VARIABLE MAPPING ==="
+    
+    # 1. Get the environment name from the UI variable (and force uppercase)
+    ENV=$(echo "${ENVIRONMENT_NAME}" | tr '[:lower:]' '[:upper:]')
+    echo "DEBUG: Target environment name parsed as: '$ENV'"
+
+    # 2. Construct the exact uppercase key names Azure DevOps exposes to the OS
+    SC_KEY="${ENV}_SERVICE_CONNECTION_NAME"
+    RG_KEY="${ENV}_RESOURCE_GROUP_NAME"
+    AN_KEY="${ENV}_STORAGE_ACCOUNT_NAME"
+    CN_KEY="${ENV}_STORAGE_CONTAINER_NAME"
+    KN_KEY="${ENV}_STORAGE_KEY_NAME"
+
+    echo "DEBUG: Looking for OS Env Variable: '$SC_KEY'"
+    echo "DEBUG: Looking for OS Env Variable: '$RG_KEY'"
+    echo "DEBUG: Looking for OS Env Variable: '$AN_KEY'"
+    echo "DEBUG: Looking for OS Env Variable: '$CN_KEY'"
+    echo "DEBUG: Looking for OS Env Variable: '$KN_KEY'"
+
+    # 3. Safely look up the keys from the OS environment
+    SC_VALUE=$(env | grep "^${SC_KEY}=" | cut -d'=' -f2-)
+    RG_VALUE=$(env | grep "^${RG_KEY}=" | cut -d'=' -f2-)
+    AN_VALUE=$(env | grep "^${AN_KEY}=" | cut -d'=' -f2-)
+    CN_VALUE=$(env | grep "^${CN_KEY}=" | cut -d'=' -f2-)
+    KN_VALUE=$(env | grep "^${KN_KEY}=" | cut -d'=' -f2-)
+    
+    echo "DEBUG: Found Storage Account Value: '$SC_VALUE'"
+    echo "DEBUG: Found Resource Group Value:  '$RG_VALUE'"
+    echo "DEBUG: Found Resource Group Value:  '$AN_VALUE'"
+    echo "DEBUG: Found Resource Group Value:  '$CN_VALUE'"
+    echo "DEBUG: Found Resource Group Value:  '$KN_VALUE'"
+
+    # 4. Safety check
+    if [ -z "$SC_VALUE" ] || [ -z "$RG_VALUE" ]; then
+      echo "##vso[task.logissue type=error]Mapping failed! Could not find variable group keys matching '$SC_KEY' or '$RG_KEY'."
+      exit 1
+    fi
+
+    # 5. Export to clean pipeline variables for downstream tasks
+    
+    echo "DEBUG: Setting Azure DevOps Pipeline variable: SERVICE_CONNECTION_NAME"
+    echo "##vso[task.setvariable variable=SERVICE_CONNECTION_NAME]$SC_VALUE"
+    
+    echo "DEBUG: Setting Azure DevOps Pipeline variable: BACKEND_RESOURCE_GROUP_NAME"
+    echo "##vso[task.setvariable variable=BACKEND_RESOURCE_GROUP_NAME]$RG_VALUE"
+
+    echo "DEBUG: Setting Azure DevOps Pipeline variable: BACKEND_AZURE_STORAGE_ACCOUNT_NAME"
+    echo "##vso[task.setvariable variable=BACKEND_AZURE_STORAGE_ACCOUNT_NAME]$AN_VALUE"
+
+    echo "DEBUG: Setting Azure DevOps Pipeline variable: BACKEND_AZURE_STORAGE_CONTAINER_NAME"
+    echo "##vso[task.setvariable variable=BACKEND_AZURE_STORAGE_CONTAINER_NAME]$CN_VALUE"
+    
+    echo "DEBUG: Setting Azure DevOps Pipeline variable: BACKEND_AZURE_STORAGE_KEY_NAME"
+    echo "##vso[task.setvariable variable=BACKEND_AZURE_STORAGE_KEY_NAME]$KN_VALUE"
+    
+    echo "=== END DEBUG: STATE VARIABLE MAPPING SUCCESSFUL ==="
+  displayName: 'Dynamic State Variable Mapper'
+  env:
+    ENVIRONMENT_NAME: $(environment_name) # Injecting pipeline variable
