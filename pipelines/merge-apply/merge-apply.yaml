@@ -36,6 +36,7 @@ stages:
 - stage: Apply
   displayName: Apply Terraform Plan from pipeline artefact
   jobs:
+  
   - job: Comment
     dependsOn: Apply
     steps:
@@ -96,8 +97,17 @@ stages:
         buildVersionToDownload: latest
         targetPath: $(Build.SourcesDirectory)/$(directory)
 
+    - template: ../steps/config-data-dynamic-vars.yml
+
+    - template: ../steps/state-data-dynamic-vars.yml
+
     - template: ../steps/git-config-pat.yml
-      
+
+    - template: ../steps/az-cli-appconfig.yml
+      parameters:
+        path: $(tfvars-auto-file)
+        endpoint: $(APP_CONFIG_ENDPOINT)
+        
     - template: ../steps/terraform-init.yml
 
     - task: TerraformTaskV4@4
