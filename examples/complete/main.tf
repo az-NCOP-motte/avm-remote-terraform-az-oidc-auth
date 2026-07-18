@@ -2,7 +2,7 @@ locals {
   devops_project_name = var.devops_project_name
   resource_group_name = var.resource_group_name
   prefix              = ""
-  suffix              = "complete"
+  suffix              = "prod1"
 }
 
 terraform {
@@ -92,22 +92,18 @@ module "this" {
           name = "git-automation"
           pools = {
             pool1 = {
-              name                 = "git-automation"
+              name                 = "${local.suffix}-motte-pipeline"
               storage_account_type = "Standard"
               maximum_concurrency  = 1
               profile_images = [
                 {
                   "aliases" : [
                     "ubuntu-24.04-g2",
-                    "git-automation",
+                    "az-pipeline",
                   ],
                   "well_known_image_name" : "ubuntu-24.04-g2/latest"
                 }
               ]
-            }
-            pool2 = {
-              name                = "git-automation-two"
-              maximum_concurrency = 1
             }
           }
         }

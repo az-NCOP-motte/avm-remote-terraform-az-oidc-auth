@@ -95,7 +95,7 @@ module "this" {
                 {
                   "aliases" : [
                     "ubuntu-24.04-g2",
-                    "git-automation",
+                    "az-pipeline",
                   ],
                   "well_known_image_name" : "ubuntu-24.04-g2/latest"
                 }
