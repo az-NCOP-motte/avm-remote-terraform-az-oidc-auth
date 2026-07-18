@@ -27,11 +27,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.8)
-
-- <a name="requirement_azuredevops"></a> [azuredevops](#requirement\_azuredevops) (>=1.15.1)
-
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (4.71.0, <5.0.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -200,6 +196,7 @@ map(object({
         maximum_concurrency           = number
         storage_account_type          = optional(string, "Standard")
         sku_name                      = optional(string, "Standard_D2ads_v5")
+        enable_telemetry              = optional(bool, false)
         prediction_profile_automatice = optional(string, "MostCostEffective")
         # image_alias                   = optional(string, "az-pipeline")
         # well_known_image_name         = optional(string, "ubuntu-24.04-g2/latest")
@@ -694,12 +691,6 @@ Source: ./modules/devcenter
 
 Version:
 
-### <a name="module_config_data_azuredevops_variable_groups"></a> [config\_data\_azuredevops\_variable\_groups](#module\_config\_data\_azuredevops\_variable\_groups)
-
-Source: ./modules/variablegroup
-
-Version:
-
 ### <a name="module_keyvaults"></a> [keyvaults](#module\_keyvaults)
 
 Source: Azure/avm-res-keyvault-vault/azurerm
@@ -721,12 +712,6 @@ Version:
 ### <a name="module_serviceconnections"></a> [serviceconnections](#module\_serviceconnections)
 
 Source: ./modules/serviceconnection
-
-Version:
-
-### <a name="module_state_data_azuredevops_variable_groups"></a> [state\_data\_azuredevops\_variable\_groups](#module\_state\_data\_azuredevops\_variable\_groups)
-
-Source: ./modules/variablegroup
 
 Version:
 

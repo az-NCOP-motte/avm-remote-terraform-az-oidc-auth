@@ -15,6 +15,7 @@ variable "devcenters" {
         maximum_concurrency           = number
         storage_account_type          = optional(string, "Standard")
         sku_name                      = optional(string, "Standard_D2ads_v5")
+        enable_telemetry              = optional(bool, false)
         prediction_profile_automatice = optional(string, "MostCostEffective")
         # image_alias                   = optional(string, "az-pipeline")
         # well_known_image_name         = optional(string, "ubuntu-24.04-g2/latest")

@@ -10,17 +10,14 @@ module "pools" {
   location                       = module.az-environment-resourcegroup.location
   name                           = each.value.name
   resource_group_name            = module.az-environment-resourcegroup.name
+  enable_telemetry               = each.value.enable_telemetry
   maximum_concurrency            = each.value.maximum_concurrency
   organization_profile = {
     organizations = [{ name = var.devops_organization_name }]
   }
   agent_profile_kind = "Stateless"
-  enable_telemetry   = var.enable_telemetry
   role_assignments = {
-    rbac_contributor = {
-      role_definition_id_or_name = "Contributor"
-      principal_id               = data.azapi_client_config.current.object_id
-    }
+    rbac_contributor = local.role_assignments.global_contributor
   }
   fabric_profile_os_disk_storage_account_type         = each.value.storage_account_type #'Standard', 'Premium' and 'StandardSSD',
   fabric_profile_sku_name                             = each.value.sku_name

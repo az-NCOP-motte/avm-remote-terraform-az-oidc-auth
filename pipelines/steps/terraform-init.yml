@@ -1,6 +1,6 @@
 steps:
 
-  - task: TerraformInstaller@0
+  - task: TerraformInstaller@1
     displayName: Install Terraform
     inputs:
       terraformVersion: 'latest'
@@ -16,11 +16,11 @@ steps:
       backendServiceArm: $(service-connection)
       backendAzureRmResourceGroupName: $(BACKEND_RESOURCE_GROUP_NAME)
       backendAzureRmStorageAccountName: $(BACKEND_AZURE_STORAGE_ACCOUNT_NAME)
-      backendAzureRmContainerName: $(BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME)
-      backendAzureRmKey: $(BACKEND_AZURE_STORAGE_ACCOUNT_KEY_NAME)
+      backendAzureRmContainerName: $(BACKEND_AZURE_STORAGE_CONTAINER_NAME)
+      backendAzureRmKey: $(BACKEND_AZURE_STORAGE_KEY_NAME)
     env:
       ARM_USE_AZUREAD: true
       ARM_USE_OIDC: true
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-      TF_LOG: DEBUG
+      TF_LOG: $(log-level)

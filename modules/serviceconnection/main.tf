@@ -17,3 +17,12 @@ resource "azuredevops_serviceendpoint_azurerm" "this" {
   azurerm_subscription_id   = var.subscription_id
   azurerm_subscription_name = "Filler Subscription Name"
 }
+
+resource "azuread_application_federated_identity_credential" "this" {
+  application_id = azuread_application.this.id
+  display_name   = azuredevops_serviceendpoint_azurerm.this.id
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = azuredevops_serviceendpoint_azurerm.this.workload_identity_federation_issuer
+  subject        = azuredevops_serviceendpoint_azurerm.this.workload_identity_federation_subject
+}
+
