@@ -22,7 +22,7 @@ steps:
         echo "📘 Reading Terraform plan from: $INPUT_TEXT_FILE"
 
         # Read entire text file
-        PLAN_CONTENT="$(cat "$INPUT_TEXT_FILE")"
+        OUTPUT_CONTENT="$(cat "$INPUT_TEXT_FILE")"
 
         # Build beautiful markdown block )
         MARKDOWN=$(cat << 'EOF'
@@ -34,7 +34,7 @@ steps:
         <summary> PR merged (click to expand)</summary>
         
         ``````hcl
-        details here...
+        __OUTPUTS__
         ``````
         </details>
         
@@ -43,6 +43,7 @@ steps:
 
         # Inject markdown template
         MARKDOWN="${MARKDOWN/__BUILD_ID__/$BUILD_ID}"
+        MARKDOWN="${MARKDOWN/__OUTPUTS__/$OUTPUT_CONTENT}"
 
         echo "✅ Writing JSON payload to: $OUTPUT_FILE"
 

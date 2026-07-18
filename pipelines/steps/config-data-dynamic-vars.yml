@@ -1,0 +1,30 @@
+steps:
+- bash: |
+    echo "=== START DEBUG: APP CONFIG MAPPING ==="
+    
+    # 1. Get the environment name from the UI variable (and make it uppercase to match AzDO)
+    ENV=$(echo "${ENVIRONMENT_NAME}" | tr '[:lower:]' '[:upper:]')
+    echo "DEBUG: Target environment name parsed as: '$ENV'"
+
+    # 2. Construct the exact uppercase key name Azure DevOps exposes to the OS
+    CONFIG_KEY="${ENV}_APP_CONFIG_ENDPOINT"
+    echo "DEBUG: Looking for converted OS Environment Variable: '$CONFIG_KEY'"
+
+    # 3. Safely look up the hyphenated key from the environment
+    CONFIG_VALUE=$(env | grep "^${CONFIG_KEY}=" | cut -d'=' -f2-)
+    echo "DEBUG: Found App Config Value: '$CONFIG_VALUE'"
+
+    # 4. Safety check
+    if [ -z "$CONFIG_VALUE" ]; then
+      echo "##vso[task.logissue type=error]Mapping failed! Could not find variable group key matching '$CONFIG_KEY'."
+      exit 1
+    fi
+
+    # 5. Export to a clean pipeline variable for downstream tasks
+    echo "DEBUG: Setting Azure DevOps Pipeline variable: APP_CONFIG_ENDPOINT"
+    echo "##vso[task.setvariable variable=APP_CONFIG_ENDPOINT]$CONFIG_VALUE"
+    
+    echo "=== END DEBUG: APP CONFIG MAPPING SUCCESSFUL ==="
+  displayName: 'Dynamic App Config Mapper'
+  env:
+    ENVIRONMENT_NAME: $(environment_name) # Injecting pipeline variable

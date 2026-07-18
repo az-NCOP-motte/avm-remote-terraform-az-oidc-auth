@@ -2,10 +2,8 @@
 # Start with a app config from Azure then Creates a Terraform Plan through a Service Connection, to post as PR Comment.
 
 variables:
-- group: '$(environment_name)-state-data'
-- group: '$(environment_name)-config-data'
-- name: service-connection
-  value: 'avm-remote-terraform-az-oidc-auth/$(environment_name)' # Override Variable in Specific Pipeline to use another
+- group: config-data
+- group: state-data
 - name: provider
   value: 'azurerm'
 - name: directory
@@ -22,6 +20,8 @@ variables:
   value: 'plan.txt'
 - name: comment-json-file
   value: 'terraform-plan-comment.json'
+- name: log-level
+  value: DEBUG
 
 trigger:
   branches:
@@ -41,12 +41,14 @@ stages:
   - job: Generate
     steps:
 
+    - template: ../steps/config-data-dynamic-vars.yml
+    - template: ../steps/state-data-dynamic-vars.yml
     - template: ../steps/git-config-pat.yml
 
     - template: ../steps/az-cli-appconfig.yml
       parameters:
         path: $(tfvars-auto-file)
-        endpoint: $(app-config-endpoint)
+        endpoint: $(APP_CONFIG_ENDPOINT)
 
     - template: ../steps/terraform-init.yml
 
@@ -63,7 +65,7 @@ stages:
         ARM_USE_OIDC: true
         TF_IN_AUTOMATION: true
         TF_INPUT: 0
-        TF_LOG: DEBUG
+        TF_LOG: $(log-level)
 
     - task: PublishPipelineArtifact@1
       displayName: Publish Plan File as an artifact
@@ -82,23 +84,6 @@ stages:
         inputFile: "$(directory)/$(plan-text-file)"
         outputFile: "$(directory)/$(comment-json-file)"
 
-  #   - task: PublishPipelineArtifact@1
-  #     displayName: Publish Comment File as an artifact
-  #     inputs:
-  #       targetPath: '$(directory)/$(comment-json-file)'
-  #       artifactName: 'CommentJSON'
-  #       publishLocation: $(plan-artifact-publish-location)
-      
-  # - job: Post
-  #   dependsOn: Generate
-  #   steps:
-
-  #   - task: DownloadPipelineArtifact@2
-  #     displayName: Download Comment file
-  #     inputs:
-  #       artifact: 'CommentJSON'
-  #       targetPath: $(directory)
-      
     - template: ../steps/az-cli-post-pr-comment.yml
       parameters:
         PR_ID: $(System.PullRequest.PullRequestId)
